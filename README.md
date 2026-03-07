@@ -2,6 +2,30 @@
 
 Self-hosted spaced repetition — like Anki, but on your own server.
 
+## Quick Reference
+
+```bash
+# Pull latest + rebuild everything
+git pull && docker compose -f docker-compose.prod.yml up -d --build
+
+# Rebuild frontend only
+docker compose -f docker-compose.prod.yml up -d --build frontend
+
+# Rebuild backend only
+docker compose -f docker-compose.prod.yml up -d --build backend
+
+# Run migrations (after backend changes)
+docker compose -f docker-compose.prod.yml exec backend alembic upgrade head
+
+# View logs
+docker compose -f docker-compose.prod.yml logs -f
+docker compose -f docker-compose.prod.yml logs -f backend
+docker compose -f docker-compose.prod.yml logs -f frontend
+
+# Check container status
+docker compose -f docker-compose.prod.yml ps
+```
+
 ## Stack
 
 | Layer     | Technology                            |
