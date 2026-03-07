@@ -193,13 +193,13 @@ export default function SplashPage({ isDark, onToggleTheme }: SplashPageProps) {
         ref={heroRef}
         className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-24 pb-16 overflow-hidden"
       >
-        <motion.div style={{ y: c1Y, rotate: c1R, opacity: c1O }} className="absolute left-[6%] top-[16%] w-64 h-44">
+        <motion.div style={{ y: c1Y, rotate: c1R, opacity: c1O }} className="absolute -left-48 lg:-left-24 xl:left-[6%] top-[16%] w-64 h-44">
           <GhostCard text={GHOST_CARDS[0].front} className="w-full h-full" />
         </motion.div>
-        <motion.div style={{ y: c2Y, rotate: c2R, opacity: c2O }} className="absolute right-[5%] top-[22%] w-56 h-40">
+        <motion.div style={{ y: c2Y, rotate: c2R, opacity: c2O }} className="absolute -right-48 lg:-right-24 xl:right-[5%] top-[22%] w-56 h-40">
           <GhostCard text={GHOST_CARDS[1].front} className="w-full h-full" />
         </motion.div>
-        <motion.div style={{ y: c3Y, rotate: c3R, opacity: c3O }} className="absolute left-[16%] bottom-[18%] w-52 h-36">
+        <motion.div style={{ y: c3Y, rotate: c3R, opacity: c3O }} className="absolute -left-48 lg:-left-24 xl:left-[16%] bottom-[18%] w-52 h-36">
           <GhostCard text={GHOST_CARDS[2].front} className="w-full h-full" />
         </motion.div>
 
