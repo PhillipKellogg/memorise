@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --neu-bg: #ECEAE4;
+    --neu-surface: #F0EEE8;
+    --neu-shadow-dark: #CAC7BE;
+    --neu-shadow-light: #FFFFFF;
+    --neu-text: #2C2A25;
+    --neu-muted: #9A9690;
+    --neu-accent: #5B82B8;
+  }
+
+  .dark {
+    --neu-bg: #1A1815;
+    --neu-surface: #201E1A;
+    --neu-shadow-dark: #101008;
+    --neu-shadow-light: #252220;
+    --neu-text: #E4DFD4;
+    --neu-muted: #6E6B65;
+    --neu-accent: #7A9FBD;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--neu-bg);
+    color: var(--neu-text);
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  * { box-sizing: border-box; }
+}
+
+@layer utilities {
+  .perspective-1000 { perspective: 1000px; }
+  .preserve-3d { transform-style: preserve-3d; }
+  .backface-hidden { backface-visibility: hidden; }
+  .rotate-y-180 { transform: rotateY(180deg); }
+
+  /* ── Neumorphic surfaces ── */
+  .neu-raised {
+    background: var(--neu-bg);
+    box-shadow: 6px 6px 14px var(--neu-shadow-dark), -6px -6px 14px var(--neu-shadow-light);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+  }
+
+  .neu-raised-sm {
+    background: var(--neu-bg);
+    box-shadow: 3px 3px 8px var(--neu-shadow-dark), -3px -3px 8px var(--neu-shadow-light);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+  }
+
+  .neu-inset {
+    background: var(--neu-bg);
+    box-shadow: inset 4px 4px 10px var(--neu-shadow-dark), inset -4px -4px 10px var(--neu-shadow-light);
+  }
+
+  /* Answer state — softer inset, card stays "pressed" */
+  .neu-answered {
+    background: var(--neu-bg);
+    box-shadow: inset 2px 2px 6px var(--neu-shadow-dark), inset -2px -2px 6px var(--neu-shadow-light);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+  }
+
+  /* Deep press — used during the click moment */
+  .neu-deep-press {
+    background: var(--neu-bg);
+    box-shadow: inset 5px 5px 12px var(--neu-shadow-dark), inset -5px -5px 12px var(--neu-shadow-light);
+  }
+
+  /* ── Hover / interactive states ── */
+  .neu-btn {
+    background: var(--neu-bg);
+    box-shadow: 4px 4px 10px var(--neu-shadow-dark), -4px -4px 10px var(--neu-shadow-light);
+    transition: box-shadow 0.18s ease, transform 0.12s ease;
+  }
+  .neu-btn:hover {
+    box-shadow: 6px 6px 14px var(--neu-shadow-dark), -6px -6px 14px var(--neu-shadow-light);
+  }
+  .neu-btn:active {
+    box-shadow: inset 3px 3px 8px var(--neu-shadow-dark), inset -3px -3px 8px var(--neu-shadow-light);
+    transform: scale(0.97);
+  }
+
+  .neu-card-hover:hover {
+    box-shadow: 9px 9px 20px var(--neu-shadow-dark), -9px -9px 20px var(--neu-shadow-light);
+  }
+
+  /* ── Colour helpers ── */
+  .text-neu   { color: var(--neu-text); }
+  .text-muted { color: var(--neu-muted); }
+  .text-accent { color: var(--neu-accent); }
+  .bg-accent  { background-color: var(--neu-accent); }
+}
