@@ -13,23 +13,89 @@ Self-hosted spaced repetition — like Anki, but on your own server.
 | ORM       | SQLAlchemy 2 + Alembic                |
 | Database  | PostgreSQL 16                         |
 | Algorithm | SM-2 spaced repetition                |
-| Infra     | Docker Compose + Nginx                |
+| Infra     | Docker Compose + Cloudflare Tunnel    |
+
+---
+
+## Production Deploy
+
+Uses Cloudflare Tunnel for routing — no open ports required beyond SSH.
+
+### 1. Clone and configure
+
+```bash
+git clone <your-repo-url> ~/memorise
+cd ~/memorise
+cp .env.example .env
+nano .env
+```
+
+Generate a secret key:
+```bash
+openssl rand -hex 32
+```
+
+`.env`:
+```env
+POSTGRES_USER=memorise
+POSTGRES_PASSWORD=your-strong-password
+POSTGRES_DB=memorise
+SECRET_KEY=paste-generated-key-here
+ENVIRONMENT=production
+ALLOWED_ORIGINS=https://memorise.faradaydev.ca
+VITE_API_URL=https://memorise-api.faradaydev.ca
+```
+
+### 2. Cloudflare Tunnel
+
+Add to `~/.cloudflared/config.yml` (before the catch-all `http_status:404` line):
+
+```yaml
+  - hostname: memorise.faradaydev.ca
+    service: http://localhost:8081
+  - hostname: memorise-api.faradaydev.ca
+    service: http://localhost:3232
+```
+
+Add DNS CNAME records in Cloudflare for both hostnames pointing to your tunnel ID, then:
+
+```bash
+sudo systemctl restart cloudflared
+```
+
+### 3. Start
+
+```bash
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml exec backend alembic upgrade head
+docker compose -f docker-compose.prod.yml exec backend python seed.py
+```
+
+### Updates
+
+```bash
+git pull
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml exec backend alembic upgrade head
+```
+
+---
 
 ## Local Development
 
-Run the DB in Docker, everything else natively. Three terminals:
+Run the DB in Docker, everything else natively.
 
 **Terminal 1 — Database**
 ```bash
 docker compose up db
 ```
 
-**Terminal 2 — Backend** (first time: create `backend/.env` from the block below, then run)
+**Terminal 2 — Backend** (first time: create `backend/.env`, then run)
 ```bash
 cd backend && python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt && alembic revision --autogenerate -m "initial" && alembic upgrade head && uvicorn app.main:app --reload --port 8000
 ```
 
-After the first run you can skip straight to:
+After the first run:
 ```bash
 cd backend && source .venv/bin/activate && uvicorn app.main:app --reload --port 8000
 ```
@@ -62,24 +128,6 @@ VITE_API_URL=http://localhost:8000
 
 ---
 
-## Quickstart (Docker)
-
-```bash
-cp .env.example .env
-# Edit .env — set POSTGRES_PASSWORD and SECRET_KEY at minimum
-
-docker compose up --build
-```
-
-## Services
-
-| Service  | URL                      | Notes                        |
-|----------|--------------------------|------------------------------|
-| Frontend | http://localhost:5173    | Vite dev server              |
-| Backend  | http://localhost:3232    | FastAPI (internal only prod) |
-| API Docs | http://localhost:3232/docs | Swagger UI                 |
-| Database | localhost:5432           | PostgreSQL (internal)        |
-
 ## Project Structure
 
 ```
@@ -102,28 +150,10 @@ memorise/
 │   │   └── main.py
 │   ├── alembic/            # Database migrations
 │   └── Dockerfile
-├── docs/
-│   └── self-hosting.md     # Nginx + Certbot production setup
-├── docker-compose.yml
+├── docker-compose.yml      # Local dev (Vite dev server)
+├── docker-compose.prod.yml # Production (built frontend + no dev ports)
 ├── .env.example
 └── README.md
-```
-
-## Running Migrations
-
-```bash
-# Inside the backend container (after docker compose up)
-docker compose exec backend alembic revision --autogenerate -m "initial"
-docker compose exec backend alembic upgrade head
-```
-
-Or with a local venv:
-
-```bash
-cd backend
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-alembic upgrade head
 ```
 
 ## Roadmap
@@ -132,6 +162,7 @@ alembic upgrade head
 - [x] SM-2 spaced repetition algorithm
 - [x] Database models (User, Deck, Card)
 - [x] API routers (health, decks, cards)
+- [x] Production deploy via Cloudflare Tunnel
 - [ ] JWT authentication
 - [ ] User registration + login UI
 - [ ] Deck management UI
