@@ -110,6 +110,46 @@
     box-shadow: inset 5px 5px 13px var(--neu-shadow-dark), inset -5px -5px 13px var(--neu-shadow-light);
   }
 
+  /* ── Range slider ── */
+  .neu-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 99px;
+    background: var(--neu-bg);
+    box-shadow: inset 3px 3px 6px var(--neu-shadow-dark), inset -3px -3px 6px var(--neu-shadow-light);
+    outline: none;
+    cursor: pointer;
+  }
+  .neu-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--neu-bg);
+    box-shadow: 3px 3px 8px var(--neu-shadow-dark), -3px -3px 8px var(--neu-shadow-light);
+    cursor: pointer;
+    transition: box-shadow 0.15s ease, transform 0.1s ease;
+  }
+  .neu-slider::-webkit-slider-thumb:hover {
+    box-shadow: 4px 4px 10px var(--neu-shadow-dark), -4px -4px 10px var(--neu-shadow-light);
+  }
+  .neu-slider::-webkit-slider-thumb:active {
+    box-shadow: inset 2px 2px 5px var(--neu-shadow-dark), inset -2px -2px 5px var(--neu-shadow-light);
+    transform: scale(0.95);
+  }
+  .neu-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: var(--neu-bg);
+    box-shadow: 3px 3px 8px var(--neu-shadow-dark), -3px -3px 8px var(--neu-shadow-light);
+    cursor: pointer;
+  }
+
   /* ── Colour helpers ── */
   .text-neu   { color: var(--neu-text); }
   .text-muted { color: var(--neu-muted); }

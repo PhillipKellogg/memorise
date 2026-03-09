@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import Nav from '@/components/Nav'
+import StudyCard from '@/components/StudyCard'
+import NeuButton from '@/components/NeuButton'
 import { useEnroll, useNextCard, useReviewCard, studyKeys } from '@/queries'
 import { useQueryClient } from '@tanstack/react-query'
-import type { StudyCard } from '@/types'
 
 interface StudyPageProps {
   isDark: boolean
@@ -12,58 +13,11 @@ interface StudyPageProps {
 }
 
 const RATINGS = [
-  { value: 1, label: 'Forgot',  key: '1', color: 'text-red-400' },
-  { value: 2, label: 'Hard',    key: '2', color: 'text-orange-400' },
-  { value: 3, label: 'Medium',  key: '3', color: 'text-accent' },
-  { value: 4, label: 'Easy',    key: '4', color: 'text-green-500' },
+  { value: 1, label: 'Forgot',  key: '1', variant: 'danger'   as const },
+  { value: 2, label: 'Hard',    key: '2', variant: 'warning'  as const },
+  { value: 3, label: 'Medium',  key: '3', variant: 'accent'   as const },
+  { value: 4, label: 'Easy',    key: '4', variant: 'success'  as const },
 ] as const
-
-function FlipStudyCard({
-  card,
-  flipped,
-  onFlip,
-}: {
-  card: StudyCard
-  flipped: boolean
-  onFlip: () => void
-}) {
-  return (
-    <div
-      className="relative w-full cursor-pointer"
-      style={{ height: '280px', perspective: '1200px' }}
-      onClick={onFlip}
-    >
-      <motion.div
-        animate={{ rotateY: flipped ? 180 : 0 }}
-        transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
-        style={{ transformStyle: 'preserve-3d', width: '100%', height: '100%', position: 'relative' }}
-      >
-        {/* Front */}
-        <div
-          className="absolute inset-0 neu-raised rounded-3xl flex flex-col items-center justify-center p-8"
-          style={{ backfaceVisibility: 'hidden' }}
-        >
-          <p className="text-xs uppercase tracking-widest text-muted font-body mb-4">Question</p>
-          <p className="font-display text-xl font-semibold text-neu text-center leading-snug">{card.front}</p>
-          {!flipped && (
-            <p className="absolute bottom-5 text-xs text-muted font-body opacity-50">
-              tap to reveal · space
-            </p>
-          )}
-        </div>
-
-        {/* Back */}
-        <div
-          className="absolute inset-0 neu-raised rounded-3xl flex flex-col items-center justify-center p-8"
-          style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
-        >
-          <p className="text-xs uppercase tracking-widest text-muted font-body mb-4">Answer</p>
-          <p className="font-display text-xl font-semibold text-neu text-center leading-snug">{card.back}</p>
-        </div>
-      </motion.div>
-    </div>
-  )
-}
 
 export default function StudyPage({ isDark, onToggleTheme }: StudyPageProps) {
   const { deckId } = useParams<{ deckId: string }>()
@@ -147,17 +101,11 @@ export default function StudyPage({ isDark, onToggleTheme }: StudyPageProps) {
                 </div>
                 <div className="flex items-center justify-center gap-4">
                   <Link to="/browse">
-                    <button type="button" className="neu-btn px-6 py-3 rounded-2xl text-sm font-body font-semibold text-muted">
-                      Browse more decks
-                    </button>
+                    <NeuButton size="lg" className="rounded-2xl">Browse more decks</NeuButton>
                   </Link>
-                  <button
-                    type="button"
-                    onClick={() => navigate('/')}
-                    className="neu-btn px-6 py-3 rounded-2xl text-sm font-body font-semibold text-accent"
-                  >
+                  <NeuButton variant="accent" size="lg" className="rounded-2xl" onClick={() => navigate('/')}>
                     Back home
-                  </button>
+                  </NeuButton>
                 </div>
               </motion.div>
             ) : isLoading || !card ? (
@@ -173,7 +121,12 @@ export default function StudyPage({ isDark, onToggleTheme }: StudyPageProps) {
                 transition={{ duration: 0.25 }}
               >
                 {/* Card */}
-                <FlipStudyCard card={card} flipped={flipped} onFlip={() => !flipped && setFlipped(true)} />
+                <StudyCard
+                  front={card.front}
+                  back={card.back}
+                  flipped={flipped}
+                  onFlip={() => !flipped && setFlipped(true)}
+                />
 
                 {/* Rating buttons */}
                 <AnimatePresence>
@@ -186,17 +139,16 @@ export default function StudyPage({ isDark, onToggleTheme }: StudyPageProps) {
                       className="grid grid-cols-4 gap-3 mt-6"
                     >
                       {RATINGS.map(r => (
-                        <motion.button
+                        <NeuButton
                           key={r.value}
-                          type="button"
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleRate(r.value)}
+                          variant={r.variant}
                           disabled={isSubmitting}
-                          className={`neu-btn rounded-2xl py-4 flex flex-col items-center gap-1.5 disabled:opacity-40 ${r.color}`}
+                          onClick={() => handleRate(r.value)}
+                          className="rounded-2xl py-4 flex flex-col items-center gap-1.5"
                         >
-                          <span className="text-xs font-body font-bold opacity-50">{r.key}</span>
-                          <span className="text-sm font-body font-semibold">{r.label}</span>
-                        </motion.button>
+                          <span className="text-xs font-bold opacity-50">{r.key}</span>
+                          <span className="text-sm">{r.label}</span>
+                        </NeuButton>
                       ))}
                     </motion.div>
                   )}

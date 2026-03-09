@@ -7,6 +7,7 @@ import DeckBuilderPage from '@/pages/DeckBuilderPage'
 import AuthPage from '@/pages/AuthPage'
 import BrowsePage from '@/pages/BrowsePage'
 import StudyPage from '@/pages/StudyPage'
+import StorybookPage from '@/pages/StorybookPage'
 import ScrollToTop from '@/components/ScrollToTop'
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/browse" element={<BrowsePage isDark={isDark} onToggleTheme={toggle} />} />
           <Route path="/login" element={<AuthPage isDark={isDark} onToggleTheme={toggle} />} />
           <Route path="/study/:deckId" element={<StudyPage isDark={isDark} onToggleTheme={toggle} />} />
+          <Route path="/storybook" element={<StorybookPage isDark={isDark} onToggleTheme={toggle} />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

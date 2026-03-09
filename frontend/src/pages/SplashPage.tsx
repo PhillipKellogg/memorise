@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import Nav from '@/components/Nav'
 import FlipCard from '@/components/FlipCard'
+import NeuButton from '@/components/NeuButton'
 import { usePublicDeckCards, useMyDecks, usePublicDecks } from '@/queries'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -192,20 +193,8 @@ function DeckTestRun() {
 
       {/* Nav */}
       <div className="flex items-center justify-center gap-4 mt-6">
-        <motion.button
-          whileTap={{ scale: 0.93 }}
-          onClick={() => go(-1)}
-          className="neu-btn rounded-xl px-6 py-2.5 text-sm font-body text-muted"
-        >
-          ← Prev
-        </motion.button>
-        <motion.button
-          whileTap={{ scale: 0.93 }}
-          onClick={() => go(1)}
-          className="neu-btn rounded-xl px-6 py-2.5 text-sm font-body text-accent font-semibold"
-        >
-          Next →
-        </motion.button>
+        <NeuButton onClick={() => go(-1)}>← Prev</NeuButton>
+        <NeuButton variant="accent" onClick={() => go(1)}>Next →</NeuButton>
       </div>
     </div>
   )
