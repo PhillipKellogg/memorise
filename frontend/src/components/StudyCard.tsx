@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
 interface StudyCardProps {
@@ -32,30 +33,33 @@ export default function StudyCard({ front, back, flipped, onFlip, className }: S
       onClick={handleClick}
       className={cn('rounded-3xl overflow-hidden select-none transition-all duration-200', shadowClass, className)}
     >
-      {/* Question — fixed height, question stays put when answer reveals below */}
+      {/* Question — fixed min-height, never moves */}
       <div className="min-h-[220px] flex flex-col items-center justify-center p-8 text-center">
         <p className="text-xs uppercase tracking-widest text-muted font-body mb-3">Question</p>
-        <p className="font-display text-xl font-semibold text-neu leading-snug text-center">{front}</p>
+        <p className="font-display text-xl font-semibold text-neu leading-snug">{front}</p>
         {!flipped && (
           <p className="text-xs text-muted font-body mt-5 opacity-50">tap to reveal · space</p>
         )}
       </div>
 
-      {/* Answer — pure CSS max-height reveal, no jumping */}
-      <div
-        className="overflow-hidden"
-        style={{
-          maxHeight: flipped ? '500px' : '0',
-          opacity: flipped ? 1 : 0,
-          transition: 'max-height 0.32s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease',
-        }}
-      >
-        <div className="mx-8 border-t" style={{ borderColor: 'var(--neu-shadow-dark)', opacity: 0.25 }} />
-        <div className="p-8 pt-6 text-center">
-          <p className="text-xs uppercase tracking-widest text-accent font-body mb-3">Answer</p>
-          <p className="font-display text-xl font-semibold text-neu leading-snug">{back}</p>
-        </div>
-      </div>
+      {/* Answer — height: auto animation, no max-height hack, no layout jumping */}
+      <AnimatePresence initial={false}>
+        {flipped && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+            style={{ overflow: 'hidden' }}
+          >
+            <div style={{ height: '1px', margin: '0 2rem', background: 'var(--neu-shadow-dark)', opacity: 0.4 }} />
+            <div className="p-8 pt-6 text-center">
+              <p className="text-xs uppercase tracking-widest text-accent font-body mb-3">Answer</p>
+              <p className="font-display text-xl font-semibold text-neu leading-snug">{back}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
