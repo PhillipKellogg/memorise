@@ -12,6 +12,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(__file__))
 
+from app.core.security import hash_password
 from app.db.session import SessionLocal
 from app.models.models import Card, Deck, User
 
@@ -178,7 +179,7 @@ def seed() -> None:
         user = User(
             email="demo@memorise.local",
             username="demo",
-            hashed_password="not-a-real-hash",
+            hashed_password=hash_password("demo"),
             is_active=True,
         )
         db.add(user)
