@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Nav from '@/components/Nav'
 import FlipCard from '@/components/FlipCard'
-import { useDecks, useDeckCards } from '@/queries'
+import { usePublicDeckCards, useMyDecks, usePublicDecks } from '@/queries'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface SplashPageProps {
   isDark: boolean
@@ -80,11 +81,56 @@ function GhostCard({
   )
 }
 
-// Live deck test-run component
+// My Decks strip — only shown when logged in
+function MyDecks() {
+  const navigate = useNavigate()
+  const { data: decks, isLoading } = useMyDecks()
+
+  if (isLoading) return null
+  if (!decks?.length) return (
+    <div className="text-center text-muted text-sm font-body py-8 opacity-60">
+      No decks yet — <Link to="/browse" className="text-accent">browse public decks</Link> to get started.
+    </div>
+  )
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {decks.map((deck, i) => (
+        <motion.button
+          key={deck.id}
+          type="button"
+          custom={i}
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          whileTap={{ scale: 0.97 }}
+          onClick={() => navigate(`/study/${deck.id}`)}
+          className="neu-raised rounded-2xl p-5 text-left flex flex-col gap-2"
+        >
+          <div className="flex items-start justify-between gap-2">
+            <p className="font-display font-semibold text-neu text-sm leading-snug">{deck.title}</p>
+            {deck.cards_due > 0 ? (
+              <span className="shrink-0 neu-inset rounded-full px-3 py-1 text-xs font-body text-accent font-semibold">
+                {deck.cards_due} due
+              </span>
+            ) : (
+              <span className="shrink-0 neu-inset rounded-full px-3 py-1 text-xs font-body text-muted">
+                done ✓
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-muted font-body">{deck.total_cards} cards · {deck.is_owned ? 'yours' : 'community'}</p>
+        </motion.button>
+      ))}
+    </div>
+  )
+}
+
+// Live deck test-run component — uses public decks, no auth required
 function DeckTestRun() {
-  const { data: decks, isLoading: decksLoading } = useDecks()
-  const firstDeck = decks?.[0]
-  const { data: cards, isLoading: cardsLoading } = useDeckCards(firstDeck?.id ?? 0)
+  const { data: publicDecks, isLoading: decksLoading } = usePublicDecks('')
+  const firstDeck = publicDecks?.[0]
+  const { data: cards, isLoading: cardsLoading } = usePublicDeckCards(firstDeck?.id ?? 0)
   const [index, setIndex] = useState(0)
   const [direction, setDirection] = useState<1 | -1>(1)
 
@@ -102,7 +148,7 @@ function DeckTestRun() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="neu-inset rounded-2xl px-8 py-6 text-center max-w-sm">
-          <p className="text-muted text-sm mb-2">No decks found.</p>
+          <p className="text-muted text-sm mb-2">No public decks found.</p>
           <p className="text-muted text-xs opacity-60">Run <code className="font-mono">python seed.py</code> in the backend to create a demo deck.</p>
         </div>
       </div>
@@ -162,6 +208,31 @@ function DeckTestRun() {
         </motion.button>
       </div>
     </div>
+  )
+}
+
+function MyDecksSection() {
+  const { user } = useAuth()
+  if (!user) return null
+  return (
+    <section className="py-16 px-6">
+      <div className="max-w-5xl mx-auto">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-40px' }}
+          className="mb-8"
+        >
+          <motion.p custom={0} variants={fadeUp} className="text-xs uppercase tracking-widest text-accent mb-2">
+            My decks
+          </motion.p>
+          <motion.h2 custom={1} variants={fadeUp} className="font-display text-2xl font-bold text-neu">
+            Continue studying
+          </motion.h2>
+        </motion.div>
+        <MyDecks />
+      </div>
+    </section>
   )
 }
 
@@ -244,13 +315,15 @@ export default function SplashPage({ isDark, onToggleTheme }: SplashPageProps) {
             transition={{ delay: 0.3, duration: 0.45 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="neu-btn px-8 py-3.5 rounded-2xl text-accent font-body font-semibold text-base"
-            >
-              Start Reviewing
-            </motion.button>
+            <Link to="/browse">
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="neu-btn px-8 py-3.5 rounded-2xl text-accent font-body font-semibold text-base"
+              >
+                Start Reviewing
+              </motion.button>
+            </Link>
             <Link to="/how-it-works">
               <motion.span
                 whileHover={{ scale: 1.02 }}
@@ -262,6 +335,9 @@ export default function SplashPage({ isDark, onToggleTheme }: SplashPageProps) {
           </motion.div>
         </motion.div>
       </section>
+
+      {/* ── My Decks (logged-in only) ── */}
+      <MyDecksSection />
 
       {/* ── Live Deck Test Run ── */}
       <section className="py-20 px-6">

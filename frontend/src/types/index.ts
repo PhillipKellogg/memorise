@@ -1,9 +1,16 @@
 export interface User {
   id: number
-  email: string
   username: string
   is_active: boolean
   created_at: string
+}
+
+export interface PublicDeck {
+  id: number
+  title: string
+  description: string | null
+  owner_username: string
+  card_count: number
 }
 
 export interface Deck {
@@ -11,6 +18,7 @@ export interface Deck {
   title: string
   description: string | null
   owner_id: number
+  is_public: boolean
   created_at: string
   updated_at: string
 }
@@ -26,6 +34,22 @@ export interface Card {
   next_review: string
   created_at: string
   updated_at: string
+}
+
+export interface StudyCard {
+  id: number
+  front: string
+  back: string
+  deck_id: number
+}
+
+export interface MyDeck {
+  id: number
+  title: string
+  description: string | null
+  is_owned: boolean
+  cards_due: number
+  total_cards: number
 }
 
 export interface ReviewPayload {

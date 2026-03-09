@@ -1,22 +1,19 @@
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 
 # ── User ──────────────────────────────────────────────────────────────────────
 
-class UserBase(BaseModel):
-    email: EmailStr
+class UserCreate(BaseModel):
     username: str
-
-
-class UserCreate(UserBase):
     password: str
 
 
-class UserRead(UserBase):
+class UserRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    username: str
     is_active: bool
     created_at: datetime
 
@@ -37,8 +34,17 @@ class DeckRead(DeckBase):
 
     id: int
     owner_id: int
+    is_public: bool
     created_at: datetime
     updated_at: datetime
+
+
+class PublicDeckRead(BaseModel):
+    id: int
+    title: str
+    description: str | None
+    owner_username: str
+    card_count: int
 
 
 # ── Card ──────────────────────────────────────────────────────────────────────
@@ -51,6 +57,16 @@ class CardBase(BaseModel):
 
 class CardCreate(CardBase):
     pass
+
+
+class CardCreateInDeck(BaseModel):
+    front: str
+    back: str
+
+
+class CardUpdate(BaseModel):
+    front: str
+    back: str
 
 
 class CardRead(CardBase):
@@ -78,6 +94,31 @@ class ReviewResponse(BaseModel):
     next_review: datetime
     interval: int
     easiness_factor: float
+
+
+# ── Study ─────────────────────────────────────────────────────────────────────
+
+RATING_TO_QUALITY = {1: 0, 2: 2, 3: 4, 4: 5}
+
+
+class StudySessionCard(BaseModel):
+    id: int
+    front: str
+    back: str
+    deck_id: int
+
+
+class StudyRating(BaseModel):
+    rating: int  # 1=Forgot, 2=Hard, 3=Medium, 4=Easy
+
+
+class MyDeckRead(BaseModel):
+    id: int
+    title: str
+    description: str | None
+    is_owned: bool
+    cards_due: int
+    total_cards: int
 
 
 # ── Auth ──────────────────────────────────────────────────────────────────────

@@ -92,6 +92,24 @@
     box-shadow: 9px 9px 20px var(--neu-shadow-dark), -9px -9px 20px var(--neu-shadow-light);
   }
 
+  /* ── Inputs ── */
+  .neu-input {
+    background: var(--neu-bg);
+    box-shadow: inset 4px 4px 10px var(--neu-shadow-dark), inset -4px -4px 10px var(--neu-shadow-light);
+    border: none;
+    outline: none;
+    border-radius: 1rem;
+    padding: 0.875rem 1.25rem;
+    color: var(--neu-text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9375rem;
+    transition: box-shadow 0.2s ease;
+  }
+  .neu-input::placeholder { color: var(--neu-muted); }
+  .neu-input:focus {
+    box-shadow: inset 5px 5px 13px var(--neu-shadow-dark), inset -5px -5px 13px var(--neu-shadow-light);
+  }
+
   /* ── Colour helpers ── */
   .text-neu   { color: var(--neu-text); }
   .text-muted { color: var(--neu-muted); }
