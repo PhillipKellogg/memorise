@@ -7,10 +7,11 @@ interface StudyCardProps {
   back: string
   flipped: boolean
   onFlip: () => void
+  transitioning?: boolean  // true while waiting for next card — fades question out early
   className?: string
 }
 
-export default function StudyCard({ front, back, flipped, onFlip, className }: StudyCardProps) {
+export default function StudyCard({ front, back, flipped, onFlip, transitioning = false, className }: StudyCardProps) {
   const [pressing, setPressing] = useState(false)
 
   const handleClick = () => {
@@ -23,7 +24,7 @@ export default function StudyCard({ front, back, flipped, onFlip, className }: S
   }
 
   const shadowClass = pressing
-    ? 'neu-deep-press scale-[0.98]'
+    ? 'neu-deep-press scale-[0.955]'
     : flipped
     ? 'neu-answered'
     : 'neu-raised cursor-pointer'
@@ -36,7 +37,17 @@ export default function StudyCard({ front, back, flipped, onFlip, className }: S
       {/* Question — fixed min-height, never moves */}
       <div className="min-h-[220px] flex flex-col items-center justify-center p-8 text-center">
         <p className="text-xs uppercase tracking-widest text-muted font-body mb-3">Question</p>
-        <p className="font-display text-xl font-semibold text-neu leading-snug">{front}</p>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.p
+            key={front}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: transitioning ? 0 : 1, transition: { duration: transitioning ? 0.12 : 0.18 } }}
+            exit={{ opacity: 0, transition: { duration: 0.1 } }}
+            className="font-display text-xl font-semibold text-neu leading-snug"
+          >
+            {front}
+          </motion.p>
+        </AnimatePresence>
         {!flipped && (
           <p className="text-xs text-muted font-body mt-5 opacity-50">tap to reveal · space</p>
         )}
@@ -49,7 +60,7 @@ export default function StudyCard({ front, back, flipped, onFlip, className }: S
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
             style={{ overflow: 'hidden' }}
           >
             <div style={{ height: '1px', margin: '0 2rem', background: 'var(--neu-shadow-dark)', opacity: 0.4 }} />

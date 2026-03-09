@@ -71,7 +71,7 @@
   /* Deep press — used during the click moment */
   .neu-deep-press {
     background: var(--neu-bg);
-    box-shadow: inset 5px 5px 12px var(--neu-shadow-dark), inset -5px -5px 12px var(--neu-shadow-light);
+    box-shadow: inset 8px 8px 18px var(--neu-shadow-dark), inset -8px -8px 18px var(--neu-shadow-light);
   }
 
   /* ── Hover / interactive states ── */

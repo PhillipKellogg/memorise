@@ -31,6 +31,7 @@ export default function StudyPage({ isDark, onToggleTheme }: StudyPageProps) {
 
   const [flipped, setFlipped] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [textFading, setTextFading] = useState(false)
   const [sessionDone, setSessionDone] = useState(false)
   const [reviewed, setReviewed] = useState(0)
 
@@ -62,6 +63,7 @@ export default function StudyPage({ isDark, onToggleTheme }: StudyPageProps) {
 
   const handleRate = async (rating: number) => {
     if (!card || isSubmitting) return
+    setTextFading(true)   // start fading text immediately, before API call
     setIsSubmitting(true)
     setFlipped(false)
 
@@ -72,6 +74,7 @@ export default function StudyPage({ isDark, onToggleTheme }: StudyPageProps) {
     queryClient.setQueryData(studyKeys.next(id), next ?? null)
     if (!next) setSessionDone(true)
 
+    setTextFading(false)
     setIsSubmitting(false)
   }
 
@@ -113,19 +116,14 @@ export default function StudyPage({ isDark, onToggleTheme }: StudyPageProps) {
                 Loading…
               </motion.div>
             ) : (
-              <motion.div
-                key={card.id}
-                initial={{ opacity: 0, x: 24 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -24 }}
-                transition={{ duration: 0.25 }}
-              >
-                {/* Card */}
+              <div>
+                {/* Card — stays in place, text fades inside */}
                 <StudyCard
                   front={card.front}
                   back={card.back}
                   flipped={flipped}
                   onFlip={() => !flipped && setFlipped(true)}
+                  transitioning={textFading}
                 />
 
                 {/* Rating buttons */}
@@ -160,7 +158,7 @@ export default function StudyPage({ isDark, onToggleTheme }: StudyPageProps) {
                     Rate your recall after flipping · use keys 1–4
                   </p>
                 )}
-              </motion.div>
+              </div>
             )}
           </AnimatePresence>
         </div>
