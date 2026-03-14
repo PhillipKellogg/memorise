@@ -13,12 +13,8 @@ const compat = new FlatCompat({ baseDirectory: __dirname })
 export default [
   { ignores: ['dist', 'node_modules', 'eslint.config.js', 'postcss.config.js'] },
 
-  // Airbnb base + hooks via FlatCompat (bridges ESLint 8 legacy → ESLint 9 flat config)
-  // We intentionally skip airbnb-typescript here because it's incompatible with
-  // @typescript-eslint v8 (references removed rules). TypeScript rules are added below.
   ...compat.extends('airbnb', 'airbnb/hooks'),
 
-  // TypeScript + strict rules layer
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
@@ -43,27 +39,23 @@ export default [
       },
     },
     rules: {
-      // ── React 17+ JSX transform ───────────────────────────────────────────
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-react': 'off',
-      // Only allow JSX inside .tsx files
       'react/jsx-filename-extension': ['error', { extensions: ['.tsx'] }],
-      // TypeScript handles prop validation — prop-types is redundant
       'react/require-default-props': 'off',
-      // Enforce arrow-function components (consistent with Airbnb + modern React)
       'react/function-component-definition': ['error', {
         namedComponents: 'arrow-function',
         unnamedComponents: 'arrow-function',
       }],
+      'react/jsx-props-no-spreading': ['error', { html: 'ignore', custom: 'enforce', exceptions: [] }],
 
-      // ── TypeScript: disable JS rules that have TS equivalents ─────────────
       'no-use-before-define': 'off',
       'no-shadow': 'off',
       'no-redeclare': 'off',
       'no-unused-vars': 'off',
-      'no-undef': 'off', // TypeScript handles this
+      'no-undef': 'off',
+      'no-void': ['error', { allowAsStatement: true }],
 
-      // ── TypeScript strict rules ───────────────────────────────────────────
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-use-before-define': ['error'],
@@ -82,17 +74,24 @@ export default [
         checksVoidReturn: { attributes: false },
       }],
 
-      // ── Imports ───────────────────────────────────────────────────────────
-      // Never write file extensions for .ts/.tsx imports
-      'import/extensions': ['error', 'ignorePackages', {
-        ts: 'never',
-        tsx: 'never',
-      }],
-      // Named exports are more refactor-safe than default exports
+      'import/extensions': ['error', 'ignorePackages', { ts: 'never', tsx: 'never' }],
       'import/prefer-default-export': 'off',
 
-      // ── React Refresh (Vite HMR) ──────────────────────────────────────────
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+    },
+  },
+
+  {
+    files: ['**/contexts/**'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
+
+  {
+    files: ['*.config.ts', '*.config.js', 'vite.config.ts'],
+    rules: {
+      'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
     },
   },
 ]

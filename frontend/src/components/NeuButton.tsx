@@ -1,17 +1,17 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-type Variant = 'default' | 'accent' | 'danger' | 'success' | 'warning'
-type Size = 'sm' | 'md' | 'lg'
+type Variant = 'default' | 'accent' | 'danger' | 'success' | 'warning';
+type Size = 'sm' | 'md' | 'lg';
 
 interface NeuButtonProps {
-  variant?: Variant
-  size?: Size
-  className?: string
-  children: React.ReactNode
-  onClick?: () => void
-  disabled?: boolean
-  type?: 'button' | 'submit' | 'reset'
+  variant?: Variant;
+  size?: Size;
+  className?: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  type?: 'button' | 'submit' | 'reset';
 }
 
 const variantClass: Record<Variant, string> = {
@@ -28,7 +28,7 @@ const sizeClass: Record<Size, string> = {
   lg: 'px-8 py-3.5 text-base rounded-2xl',
 };
 
-export default function NeuButton({
+const NeuButton = ({
   variant = 'default',
   size = 'md',
   className,
@@ -36,21 +36,21 @@ export default function NeuButton({
   disabled,
   type = 'button',
   onClick,
-}: NeuButtonProps) {
-  return (
-    <motion.button
-      whileTap={{ scale: disabled ? 1 : 0.95 }}
-      type={type}
-      disabled={disabled}
-      onClick={onClick}
-      className={cn(
-        'neu-btn font-body disabled:opacity-40',
-        variantClass[variant],
-        sizeClass[size],
-        className,
-      )}
-    >
-      {children}
-    </motion.button>
-  );
-}
+}: NeuButtonProps): JSX.Element => (
+  <motion.button
+    whileTap={{ scale: disabled ? 1 : 0.95 }}
+    type={type}
+    disabled={disabled}
+    onClick={onClick}
+    className={cn(
+      'neu-btn font-body disabled:opacity-40',
+      variantClass[variant],
+      sizeClass[size],
+      className,
+    )}
+  >
+    {children}
+  </motion.button>
+);
+
+export default NeuButton;

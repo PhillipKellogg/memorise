@@ -1,13 +1,13 @@
 import { cn } from '@/lib/utils';
 
 interface NeuInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string
-  hint?: string
-  error?: string
-  wrapperClassName?: string
+  label?: string;
+  hint?: string;
+  error?: string;
+  wrapperClassName?: string;
 }
 
-export default function NeuInput({
+const NeuInput = ({
   label,
   hint,
   error,
@@ -15,7 +15,7 @@ export default function NeuInput({
   className,
   id,
   ...props
-}: NeuInputProps) {
+}: NeuInputProps): JSX.Element => {
   const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-');
 
   return (
@@ -34,4 +34,6 @@ export default function NeuInput({
       {hint && !error && <p className="text-xs text-muted font-body opacity-70">{hint}</p>}
     </div>
   );
-}
+};
+
+export default NeuInput;

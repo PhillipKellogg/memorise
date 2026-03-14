@@ -10,6 +10,12 @@ import FlipCard from '@/components/FlipCard';
 
 interface Props { isDark: boolean; onToggleTheme: () => void }
 
+interface SectionProps {
+  title: string;
+  children: React.ReactNode;
+  i?: number;
+}
+
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
@@ -19,14 +25,14 @@ const fadeUp = {
   }),
 };
 
-const Section = ({ title, children, i = 0 }: { title: string; children: React.ReactNode; i?: number }) => (
+const Section = ({ title, children, i = 0 }: SectionProps): JSX.Element => (
   <motion.div custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-30px' }}>
     <p className="text-xs uppercase tracking-widest text-accent font-body mb-5">{title}</p>
     {children}
   </motion.div>
 );
 
-export default function StorybookPage({ isDark, onToggleTheme }: Props) {
+const StorybookPage = ({ isDark, onToggleTheme }: Props): JSX.Element => {
   const [sliderA, setSliderA] = useState(40);
   const [sliderB, setSliderB] = useState(70);
   const [tog1, setTog1] = useState(false);
@@ -45,7 +51,6 @@ export default function StorybookPage({ isDark, onToggleTheme }: Props) {
           <p className="text-muted mt-2">Neumorphic UI components used throughout the app.</p>
         </div>
 
-        {/* ── Buttons ── */}
         <Section title="Buttons" i={1}>
           <div className="neu-raised rounded-3xl p-8 space-y-6">
             <div>
@@ -70,7 +75,6 @@ export default function StorybookPage({ isDark, onToggleTheme }: Props) {
           </div>
         </Section>
 
-        {/* ── Inputs ── */}
         <Section title="Inputs" i={2}>
           <div className="neu-raised rounded-3xl p-8 space-y-5">
             <NeuInput
@@ -103,25 +107,38 @@ export default function StorybookPage({ isDark, onToggleTheme }: Props) {
           </div>
         </Section>
 
-        {/* ── Sliders ── */}
         <Section title="Sliders" i={3}>
           <div className="neu-raised rounded-3xl p-8 space-y-6">
             <NeuSlider label="Volume" value={sliderA} onChange={setSliderA} />
-            <NeuSlider label="Difficulty" min={1} max={5} step={1} value={sliderB > 5 ? 3 : Math.round(sliderB / 20)} onChange={(v) => setSliderB(v * 20)} showValue />
-            <NeuSlider label="No label value" min={0} max={200} step={10} value={sliderB} onChange={setSliderB} showValue={false} />
+            <NeuSlider
+              label="Difficulty"
+              min={1}
+              max={5}
+              step={1}
+              value={sliderB > 5 ? 3 : Math.round(sliderB / 20)}
+              onChange={(v) => setSliderB(v * 20)}
+              showValue
+            />
+            <NeuSlider
+              label="No label value"
+              min={0}
+              max={200}
+              step={10}
+              value={sliderB}
+              onChange={setSliderB}
+              showValue={false}
+            />
           </div>
         </Section>
 
-        {/* ── Toggles ── */}
         <Section title="Toggles" i={4}>
           <div className="neu-raised rounded-3xl p-8 space-y-5">
             <NeuToggle checked={tog1} onChange={setTog1} label="Dark mode" />
             <NeuToggle checked={tog2} onChange={setTog2} label="Email notifications" />
-            <NeuToggle checked={false} onChange={() => {}} label="Disabled toggle" disabled />
+            <NeuToggle checked={false} onChange={(): void => {}} label="Disabled toggle" disabled />
           </div>
         </Section>
 
-        {/* ── Study Card ── */}
         <Section title="Study Card" i={5}>
           <div className="space-y-4">
             <StudyCard
@@ -138,7 +155,6 @@ export default function StorybookPage({ isDark, onToggleTheme }: Props) {
           </div>
         </Section>
 
-        {/* ── Flip Card ── */}
         <Section title="Flip Card (Browse / Preview)" i={6}>
           <div className="h-52">
             <FlipCard
@@ -149,7 +165,6 @@ export default function StorybookPage({ isDark, onToggleTheme }: Props) {
           </div>
         </Section>
 
-        {/* ── Surfaces ── */}
         <Section title="Surfaces" i={7}>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {[
@@ -169,4 +184,6 @@ export default function StorybookPage({ isDark, onToggleTheme }: Props) {
       </div>
     </div>
   );
-}
+};
+
+export default StorybookPage;

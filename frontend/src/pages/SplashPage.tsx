@@ -7,17 +7,16 @@ import Nav from '@/components/Nav';
 import FlipCard from '@/components/FlipCard';
 import NeuButton from '@/components/NeuButton';
 import { usePublicDeckCards, useMyDecks, usePublicDecks } from '@/queries';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SplashPageProps {
   isDark: boolean
   onToggleTheme: () => void
 }
 
-// Ghost cards — decorative, with real text, floating in hero bg
 const GHOST_CARDS = [
   { front: 'What is the mitochondria?', back: 'The powerhouse of the cell.' },
-  { front: 'Newton\'s First Law?', back: 'An object in motion stays in motion.' },
+  { front: "Newton's First Law?", back: 'An object in motion stays in motion.' },
   { front: 'Spaced repetition?', back: 'Review right before you forget.' },
 ];
 
@@ -25,12 +24,12 @@ const FEATURES = [
   {
     icon: '🧠',
     title: 'Actually sticks',
-    description: 'The SM-2 algorithm shows you cards right before you\'d forget them. 10 minutes a day, retain for years.',
+    description: "The SM-2 algorithm shows you cards right before you'd forget them. 10 minutes a day, retain for years.",
   },
   {
     icon: '📱',
     title: 'Any device, any time',
-    description: 'Open a browser on your phone, tablet, or desktop. It\'s just a URL — no app, no sync delay.',
+    description: "Open a browser on your phone, tablet, or desktop. It's just a URL — no app, no sync delay.",
   },
   {
     icon: '🔒',
@@ -50,7 +49,7 @@ const FEATURES = [
   {
     icon: '📈',
     title: 'Knowledge compounds',
-    description: 'The longer you use it, the less time each session takes. That\'s the whole idea.',
+    description: "The longer you use it, the less time each session takes. That's the whole idea.",
   },
 ];
 
@@ -63,16 +62,13 @@ const fadeUp = {
   }),
 };
 
-// Mini ghost card rendered in hero background
-const GhostCard = ({
-  text,
-  style,
-  className,
-}: {
+interface GhostCardProps {
   text: string
   style?: React.CSSProperties
   className?: string
-}) => (
+}
+
+const GhostCard = ({ text, style, className }: GhostCardProps): JSX.Element => (
   <div
     className={`absolute rounded-2xl neu-raised pointer-events-none flex items-center justify-center p-5 ${className ?? ''}`}
     style={style}
@@ -83,8 +79,7 @@ const GhostCard = ({
   </div>
 );
 
-// My Decks strip — only shown when logged in
-const MyDecks = () => {
+const MyDecks = (): JSX.Element | null => {
   const navigate = useNavigate();
   const { data: decks, isLoading } = useMyDecks();
 
@@ -142,8 +137,7 @@ const MyDecks = () => {
   );
 };
 
-// Live deck test-run component — uses public decks, no auth required
-const DeckTestRun = () => {
+const DeckTestRun = (): JSX.Element => {
   const { data: publicDecks, isLoading: decksLoading } = usePublicDecks('');
   const firstDeck = publicDecks?.[0];
   const { data: cards, isLoading: cardsLoading } = usePublicDeckCards(firstDeck?.id ?? 0);
@@ -178,14 +172,13 @@ const DeckTestRun = () => {
 
   const card = cards[index];
 
-  const go = (dir: 1 | -1) => {
+  const go = (dir: 1 | -1): void => {
     setDirection(dir);
     setIndex((i) => (i + dir + cards.length) % cards.length);
   };
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Deck info */}
       <div className="flex items-center justify-between mb-6 px-1">
         <div>
           <p className="text-xs uppercase tracking-widest text-accent mb-0.5">Live deck</p>
@@ -199,7 +192,6 @@ const DeckTestRun = () => {
         </span>
       </div>
 
-      {/* Card */}
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={card.id}
@@ -214,7 +206,6 @@ const DeckTestRun = () => {
         </motion.div>
       </AnimatePresence>
 
-      {/* Nav */}
       <div className="flex items-center justify-center gap-4 mt-6">
         <NeuButton onClick={() => go(-1)}>← Prev</NeuButton>
         <NeuButton variant="accent" onClick={() => go(1)}>Next →</NeuButton>
@@ -223,7 +214,7 @@ const DeckTestRun = () => {
   );
 };
 
-const MyDecksSection = () => {
+const MyDecksSection = (): JSX.Element | null => {
   const { user } = useAuth();
   if (!user) return null;
   return (
@@ -248,7 +239,7 @@ const MyDecksSection = () => {
   );
 };
 
-export default function SplashPage({ isDark, onToggleTheme }: SplashPageProps) {
+const SplashPage = ({ isDark, onToggleTheme }: SplashPageProps): JSX.Element => {
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
 
@@ -271,7 +262,6 @@ export default function SplashPage({ isDark, onToggleTheme }: SplashPageProps) {
     <div className="min-h-screen font-body" style={{ background: 'var(--neu-bg)' }}>
       <Nav isDark={isDark} onToggleTheme={onToggleTheme} />
 
-      {/* ── Hero ── */}
       <section
         ref={heroRef}
         className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-24 pb-16 overflow-hidden"
@@ -329,6 +319,7 @@ export default function SplashPage({ isDark, onToggleTheme }: SplashPageProps) {
           >
             <Link to="/browse">
               <motion.button
+                type="button"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 className="neu-btn px-8 py-3.5 rounded-2xl text-accent font-body font-semibold text-base"
@@ -348,10 +339,8 @@ export default function SplashPage({ isDark, onToggleTheme }: SplashPageProps) {
         </motion.div>
       </section>
 
-      {/* ── My Decks (logged-in only) ── */}
       <MyDecksSection />
 
-      {/* ── Live Deck Test Run ── */}
       <section className="py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <motion.div
@@ -374,7 +363,6 @@ export default function SplashPage({ isDark, onToggleTheme }: SplashPageProps) {
         </div>
       </section>
 
-      {/* ── Features ── */}
       <section className="py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <motion.div
@@ -412,7 +400,6 @@ export default function SplashPage({ isDark, onToggleTheme }: SplashPageProps) {
         </div>
       </section>
 
-      {/* ── CTA ── */}
       <section className="py-24 px-6">
         <div className="max-w-2xl mx-auto">
           <motion.div
@@ -429,6 +416,7 @@ export default function SplashPage({ isDark, onToggleTheme }: SplashPageProps) {
             </motion.p>
             <motion.div custom={2} variants={fadeUp} className="flex items-center justify-center gap-4">
               <motion.button
+                type="button"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 className="neu-btn px-10 py-4 rounded-2xl text-accent font-body font-semibold"
@@ -448,7 +436,6 @@ export default function SplashPage({ isDark, onToggleTheme }: SplashPageProps) {
         </div>
       </section>
 
-      {/* ── Footer ── */}
       <footer className="py-8 px-6 neu-inset mt-4">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="font-display text-sm font-bold text-muted">
@@ -465,4 +452,6 @@ export default function SplashPage({ isDark, onToggleTheme }: SplashPageProps) {
       </footer>
     </div>
   );
-}
+};
+
+export default SplashPage;

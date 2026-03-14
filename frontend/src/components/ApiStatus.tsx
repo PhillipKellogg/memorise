@@ -2,15 +2,15 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
-import type { ApiStatus } from '@/types';
+import type { ApiStatus as ApiStatusType } from '@/types';
 
-export default function ApiStatus() {
-  const [status, setStatus] = useState<ApiStatus>('checking');
+const ApiStatus = (): JSX.Element => {
+  const [status, setStatus] = useState<ApiStatusType>('checking');
 
   useEffect(() => {
     let cancelled = false;
 
-    const check = async () => {
+    const check = async (): Promise<void> => {
       try {
         await api.get('/health', { timeout: 4000 });
         if (!cancelled) setStatus('online');
@@ -19,21 +19,21 @@ export default function ApiStatus() {
       }
     };
 
-    check();
-    const interval = setInterval(check, 30_000);
+    void check();
+    const interval = setInterval(() => { void check(); }, 30_000);
     return () => {
       cancelled = true;
       clearInterval(interval);
     };
   }, []);
 
-  const label: Record<ApiStatus, string> = {
+  const label: Record<ApiStatusType, string> = {
     online: 'API online',
     offline: 'API offline',
     checking: 'Connecting…',
   };
 
-  const dotColor: Record<ApiStatus, string> = {
+  const dotColor: Record<ApiStatusType, string> = {
     online: 'bg-green-400',
     offline: 'bg-red-500',
     checking: 'bg-yellow-400',
@@ -60,4 +60,6 @@ export default function ApiStatus() {
       </motion.div>
     </AnimatePresence>
   );
-}
+};
+
+export default ApiStatus;

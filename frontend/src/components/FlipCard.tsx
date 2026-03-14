@@ -3,16 +3,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface FlipCardProps {
-  front: string
-  back: string
-  className?: string
+  front: string;
+  back: string;
+  className?: string;
 }
 
-export default function FlipCard({ front, back, className }: FlipCardProps) {
+const FlipCard = ({ front, back, className }: FlipCardProps): JSX.Element => {
   const [flipped, setFlipped] = useState(false);
   const [pressing, setPressing] = useState(false);
 
-  const handleClick = () => {
+  const handleClick = (): void => {
     if (pressing) return;
     setPressing(true);
     setTimeout(() => {
@@ -21,30 +21,36 @@ export default function FlipCard({ front, back, className }: FlipCardProps) {
     }, 160);
   };
 
-  // Shadow class: raised → deep-press during click → answered (soft inset) when flipped
-  const shadowClass = pressing
-    ? 'neu-deep-press'
-    : flipped
-      ? 'neu-answered'
-      : 'neu-raised neu-card-hover';
+  const handleKeyDown = (e: React.KeyboardEvent): void => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleClick();
+    }
+  };
+
+  const getShadowClass = (): string => {
+    if (pressing) return 'neu-deep-press';
+    if (flipped) return 'neu-answered';
+    return 'neu-raised neu-card-hover';
+  };
 
   return (
     <div
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
       role="button"
+      tabIndex={0}
       aria-label={flipped ? 'Show question' : 'Reveal answer'}
       className={cn(
         'cursor-pointer select-none rounded-2xl overflow-hidden relative',
-        shadowClass,
+        getShadowClass(),
         pressing && 'scale-[0.97]',
         className,
       )}
     >
       <AnimatePresence mode="wait" initial={false}>
-        {pressing ? (
-          // Blank during the press moment — nothing to show mid-transition
-          <motion.div key="blank" className="absolute inset-0" />
-        ) : !flipped ? (
+        {pressing && <motion.div key="blank" className="absolute inset-0" />}
+        {!pressing && !flipped && (
           <motion.div
             key="front"
             initial={{ opacity: 0 }}
@@ -62,7 +68,8 @@ export default function FlipCard({ front, back, className }: FlipCardProps) {
               tap to reveal
             </span>
           </motion.div>
-        ) : (
+        )}
+        {!pressing && flipped && (
           <motion.div
             key="back"
             initial={{ opacity: 0 }}
@@ -79,4 +86,6 @@ export default function FlipCard({ front, back, className }: FlipCardProps) {
       </AnimatePresence>
     </div>
   );
-}
+};
+
+export default FlipCard;

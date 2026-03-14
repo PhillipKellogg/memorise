@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Nav from '@/components/Nav';
 import { usePublicDecks } from '@/queries';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import type { PublicDeck } from '@/types';
 
 interface BrowsePageProps {
@@ -11,7 +11,12 @@ interface BrowsePageProps {
   onToggleTheme: () => void
 }
 
-const DeckCard = ({ deck, index }: { deck: PublicDeck; index: number }) => {
+interface DeckCardProps {
+  deck: PublicDeck;
+  index: number;
+}
+
+const DeckCard = ({ deck, index }: DeckCardProps): JSX.Element => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -53,18 +58,38 @@ const DeckCard = ({ deck, index }: { deck: PublicDeck; index: number }) => {
   );
 };
 
-export default function BrowsePage({ isDark, onToggleTheme }: BrowsePageProps) {
+const BrowsePage = ({ isDark, onToggleTheme }: BrowsePageProps): JSX.Element => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Simple debounce using state + timeout
-  const handleSearch = (value: string) => {
+  const handleSearch = (value: string): void => {
     setSearch(value);
-    clearTimeout((window as any)._searchTimer);
-    (window as any)._searchTimer = setTimeout(() => setDebouncedSearch(value), 300);
+    if (timerRef.current !== null) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setDebouncedSearch(value), 300);
   };
 
   const { data: decks, isLoading } = usePublicDecks(debouncedSearch);
+
+  const renderContent = (): JSX.Element => {
+    if (isLoading) {
+      return <div className="text-center text-muted font-body text-sm py-16">Loading…</div>;
+    }
+    if (!decks?.length) {
+      return (
+        <div className="text-center text-muted font-body text-sm py-16">
+          {debouncedSearch ? 'No decks found.' : 'No public decks yet.'}
+        </div>
+      );
+    }
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {decks.map((deck, i) => (
+          <DeckCard key={deck.id} deck={deck} index={i} />
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen font-body" style={{ background: 'var(--neu-bg)' }}>
@@ -86,24 +111,13 @@ export default function BrowsePage({ isDark, onToggleTheme }: BrowsePageProps) {
             placeholder="Search decks…"
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
-            autoFocus
           />
 
-          {isLoading ? (
-            <div className="text-center text-muted font-body text-sm py-16">Loading…</div>
-          ) : !decks?.length ? (
-            <div className="text-center text-muted font-body text-sm py-16">
-              {debouncedSearch ? 'No decks found.' : 'No public decks yet.'}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {decks.map((deck, i) => (
-                <DeckCard key={deck.id} deck={deck} index={i} />
-              ))}
-            </div>
-          )}
+          {renderContent()}
         </motion.div>
       </main>
     </div>
   );
-}
+};
+
+export default BrowsePage;

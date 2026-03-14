@@ -3,20 +3,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface StudyCardProps {
-  front: string
-  back: string
-  flipped: boolean
-  onFlip: () => void
-  transitioning?: boolean // true while waiting for next card — fades question out early
-  className?: string
+  front: string;
+  back: string;
+  flipped: boolean;
+  onFlip: () => void;
+  transitioning?: boolean;
+  className?: string;
 }
 
-export default function StudyCard({
+const StudyCard = ({
   front, back, flipped, onFlip, transitioning = false, className,
-}: StudyCardProps) {
+}: StudyCardProps): JSX.Element => {
   const [pressing, setPressing] = useState(false);
 
-  const handleClick = () => {
+  const handleClick = (): void => {
     if (flipped || pressing) return;
     setPressing(true);
     setTimeout(() => {
@@ -25,25 +25,42 @@ export default function StudyCard({
     }, 130);
   };
 
-  const shadowClass = pressing
-    ? 'neu-deep-press scale-[0.955]'
-    : flipped
-      ? 'neu-answered'
-      : 'neu-raised cursor-pointer';
+  const handleKeyDown = (e: React.KeyboardEvent): void => {
+    if (e.key === ' ') {
+      e.preventDefault();
+      handleClick();
+    }
+  };
+
+  const getShadowClass = (): string => {
+    if (pressing) return 'neu-deep-press scale-[0.955]';
+    if (flipped) return 'neu-answered';
+    return 'neu-raised cursor-pointer';
+  };
+
+  const animateOpacity = transitioning ? 0 : 1;
+  const animateDuration = transitioning ? 0.12 : 0.18;
 
   return (
     <div
       onClick={handleClick}
-      className={cn('rounded-3xl overflow-hidden select-none transition-all duration-200', shadowClass, className)}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-label="Study card"
+      className={cn(
+        'rounded-3xl overflow-hidden select-none transition-all duration-200',
+        getShadowClass(),
+        className,
+      )}
     >
-      {/* Question — fixed min-height, never moves */}
       <div className="min-h-[220px] flex flex-col items-center justify-center p-8 text-center">
         <p className="text-xs uppercase tracking-widest text-muted font-body mb-3">Question</p>
         <AnimatePresence mode="wait" initial={false}>
           <motion.p
             key={front}
             initial={{ opacity: 0 }}
-            animate={{ opacity: transitioning ? 0 : 1, transition: { duration: transitioning ? 0.12 : 0.18 } }}
+            animate={{ opacity: animateOpacity, transition: { duration: animateDuration } }}
             exit={{ opacity: 0, transition: { duration: 0.1 } }}
             className="font-display text-xl font-semibold text-neu leading-snug"
           >
@@ -55,7 +72,6 @@ export default function StudyCard({
         )}
       </div>
 
-      {/* Answer — height: auto animation, no max-height hack, no layout jumping */}
       <AnimatePresence initial={false}>
         {flipped && (
           <motion.div
@@ -78,4 +94,6 @@ export default function StudyCard({
       </AnimatePresence>
     </div>
   );
-}
+};
+
+export default StudyCard;

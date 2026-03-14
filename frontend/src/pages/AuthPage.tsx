@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Nav from '@/components/Nav';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 
 interface AuthPageProps {
   isDark: boolean
   onToggleTheme: () => void
 }
 
-export default function AuthPage({ isDark, onToggleTheme }: AuthPageProps) {
+const AuthPage = ({ isDark, onToggleTheme }: AuthPageProps): JSX.Element => {
   const navigate = useNavigate();
   const { login, register } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -18,7 +19,7 @@ export default function AuthPage({ isDark, onToggleTheme }: AuthPageProps) {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.FormEvent): Promise<void> => {
     e?.preventDefault();
     if (!username.trim() || !password.trim() || isLoading) return;
     setError('');
@@ -30,12 +31,16 @@ export default function AuthPage({ isDark, onToggleTheme }: AuthPageProps) {
         await register(username.trim(), password);
       }
       navigate('/');
-    } catch (err: any) {
-      const detail = err?.response?.data?.detail;
-      if (detail === 'Username already taken') {
-        setError('That username is already taken.');
-      } else if (detail === 'Invalid credentials') {
-        setError('Wrong username or password.');
+    } catch (err: unknown) {
+      if (axios.isAxiosError<{ detail?: string }>(err)) {
+        const { detail } = err.response?.data ?? {};
+        if (detail === 'Username already taken') {
+          setError('That username is already taken.');
+        } else if (detail === 'Invalid credentials') {
+          setError('Wrong username or password.');
+        } else {
+          setError('Something went wrong. Try again.');
+        }
       } else {
         setError('Something went wrong. Try again.');
       }
@@ -44,9 +49,14 @@ export default function AuthPage({ isDark, onToggleTheme }: AuthPageProps) {
     }
   };
 
-  const switchMode = (next: 'login' | 'register') => {
+  const switchMode = (next: 'login' | 'register'): void => {
     setMode(next);
     setError('');
+  };
+
+  const getButtonLabel = (): string => {
+    if (isLoading) return '…';
+    return mode === 'login' ? 'Sign in →' : 'Create account →';
   };
 
   return (
@@ -60,7 +70,6 @@ export default function AuthPage({ isDark, onToggleTheme }: AuthPageProps) {
           transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
           className="w-full max-w-sm"
         >
-          {/* Mode toggle */}
           <div className="neu-inset rounded-2xl p-1 flex mb-8">
             <button
               type="button"
@@ -95,7 +104,6 @@ export default function AuthPage({ isDark, onToggleTheme }: AuthPageProps) {
                   placeholder="your username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  autoFocus
                   autoComplete="username"
                 />
               </div>
@@ -122,11 +130,13 @@ export default function AuthPage({ isDark, onToggleTheme }: AuthPageProps) {
               disabled={!username.trim() || !password.trim() || isLoading}
               className="neu-btn w-full py-3 rounded-2xl text-accent font-body font-semibold text-sm disabled:opacity-40"
             >
-              {isLoading ? '…' : mode === 'login' ? 'Sign in →' : 'Create account →'}
+              {getButtonLabel()}
             </motion.button>
           </form>
         </motion.div>
       </main>
     </div>
   );
-}
+};
+
+export default AuthPage;

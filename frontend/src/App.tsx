@@ -10,7 +10,7 @@ import StudyPage from '@/pages/StudyPage';
 import StorybookPage from '@/pages/StorybookPage';
 import ScrollToTop from '@/components/ScrollToTop';
 
-export default function App() {
+const App = (): JSX.Element => {
   const { isDark, toggle } = useTheme();
 
   return (
@@ -29,4 +29,6 @@ export default function App() {
       </BrowserRouter>
     </AuthProvider>
   );
-}
+};
+
+export default App;

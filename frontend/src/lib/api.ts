@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { type InternalAxiosRequestConfig } from 'axios';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3232';
 
@@ -9,23 +9,29 @@ export const api = axios.create({
   },
 });
 
-// JWT request interceptor
 api.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     const token = localStorage.getItem('access_token');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      return {
+        ...config,
+        headers: config.headers.set('Authorization', `Bearer ${token}`),
+      };
     }
     return config;
   },
-  (error) => Promise.reject(error),
+  (error: unknown) => Promise.reject(error),
 );
 
-// Response interceptor — clear token on 401
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
+  (error: unknown) => {
+    if (
+      typeof error === 'object'
+      && error !== null
+      && 'response' in error
+      && (error as { response?: { status?: number } }).response?.status === 401
+    ) {
       localStorage.removeItem('access_token');
       window.location.href = '/login';
     }

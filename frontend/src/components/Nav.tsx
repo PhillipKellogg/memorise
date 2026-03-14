@@ -1,18 +1,18 @@
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import ApiStatus from '@/components/ApiStatus';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 
 interface NavProps {
-  isDark: boolean
-  onToggleTheme: () => void
+  isDark: boolean;
+  onToggleTheme: () => void;
 }
 
-export default function Nav({ isDark, onToggleTheme }: NavProps) {
+const Nav = ({ isDark, onToggleTheme }: NavProps): JSX.Element => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     logout();
     navigate('/');
   };
@@ -37,6 +37,7 @@ export default function Nav({ isDark, onToggleTheme }: NavProps) {
         <ApiStatus />
 
         <button
+          type="button"
           onClick={onToggleTheme}
           className="neu-btn w-9 h-9 rounded-full flex items-center justify-center text-sm"
           aria-label="Toggle theme"
@@ -53,11 +54,12 @@ export default function Nav({ isDark, onToggleTheme }: NavProps) {
         {user ? (
           <>
             <Link to="/decks/new">
-              <button className="neu-btn px-5 py-2 rounded-xl text-sm font-body font-semibold text-muted">
+              <button type="button" className="neu-btn px-5 py-2 rounded-xl text-sm font-body font-semibold text-muted">
                 New deck
               </button>
             </Link>
             <button
+              type="button"
               onClick={handleLogout}
               className="neu-btn px-5 py-2 rounded-xl text-sm font-body font-semibold text-muted"
             >
@@ -68,7 +70,7 @@ export default function Nav({ isDark, onToggleTheme }: NavProps) {
           </>
         ) : (
           <Link to="/login">
-            <button className="neu-btn px-5 py-2 rounded-xl text-sm font-body font-semibold text-accent">
+            <button type="button" className="neu-btn px-5 py-2 rounded-xl text-sm font-body font-semibold text-accent">
               Sign in
             </button>
           </Link>
@@ -76,4 +78,6 @@ export default function Nav({ isDark, onToggleTheme }: NavProps) {
       </div>
     </motion.nav>
   );
-}
+};
+
+export default Nav;
