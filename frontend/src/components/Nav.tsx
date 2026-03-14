@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion'
-import { Link, useNavigate } from 'react-router-dom'
-import ApiStatus from './ApiStatus'
-import { useAuth } from '@/contexts/AuthContext'
+import { motion } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import ApiStatus from '@/components/ApiStatus';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface NavProps {
   isDark: boolean
@@ -9,13 +9,13 @@ interface NavProps {
 }
 
 export default function Nav({ isDark, onToggleTheme }: NavProps) {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout()
-    navigate('/')
-  }
+    logout();
+    navigate('/');
+  };
 
   return (
     <motion.nav
@@ -27,7 +27,9 @@ export default function Nav({ isDark, onToggleTheme }: NavProps) {
     >
       <Link to="/">
         <span className="font-display text-xl font-bold tracking-tight text-neu">
-          mem<span className="text-accent">o</span>rise
+          mem
+          <span className="text-accent">o</span>
+          rise
         </span>
       </Link>
 
@@ -59,7 +61,9 @@ export default function Nav({ isDark, onToggleTheme }: NavProps) {
               onClick={handleLogout}
               className="neu-btn px-5 py-2 rounded-xl text-sm font-body font-semibold text-muted"
             >
-              {user.username} · sign out
+              {user.username}
+              {' '}
+              · sign out
             </button>
           </>
         ) : (
@@ -71,5 +75,5 @@ export default function Nav({ isDark, onToggleTheme }: NavProps) {
         )}
       </div>
     </motion.nav>
-  )
+  );
 }

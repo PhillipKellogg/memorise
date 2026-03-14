@@ -1,11 +1,13 @@
-import { useRef, useState } from 'react'
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
-import { Link, useNavigate } from 'react-router-dom'
-import Nav from '@/components/Nav'
-import FlipCard from '@/components/FlipCard'
-import NeuButton from '@/components/NeuButton'
-import { usePublicDeckCards, useMyDecks, usePublicDecks } from '@/queries'
-import { useAuth } from '@/contexts/AuthContext'
+import { useRef, useState } from 'react';
+import {
+  motion, useScroll, useTransform, AnimatePresence,
+} from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import Nav from '@/components/Nav';
+import FlipCard from '@/components/FlipCard';
+import NeuButton from '@/components/NeuButton';
+import { usePublicDeckCards, useMyDecks, usePublicDecks } from '@/queries';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SplashPageProps {
   isDark: boolean
@@ -17,7 +19,7 @@ const GHOST_CARDS = [
   { front: 'What is the mitochondria?', back: 'The powerhouse of the cell.' },
   { front: 'Newton\'s First Law?', back: 'An object in motion stays in motion.' },
   { front: 'Spaced repetition?', back: 'Review right before you forget.' },
-]
+];
 
 const FEATURES = [
   {
@@ -50,18 +52,19 @@ const FEATURES = [
     title: 'Knowledge compounds',
     description: 'The longer you use it, the less time each session takes. That\'s the whole idea.',
   },
-]
+];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
   visible: (i: number) => ({
-    opacity: 1, y: 0,
+    opacity: 1,
+    y: 0,
     transition: { delay: i * 0.08, duration: 0.5, ease: [0.4, 0, 0.2, 1] },
   }),
-}
+};
 
 // Mini ghost card rendered in hero background
-function GhostCard({
+const GhostCard = ({
   text,
   style,
   className,
@@ -69,30 +72,34 @@ function GhostCard({
   text: string
   style?: React.CSSProperties
   className?: string
-}) {
-  return (
-    <div
-      className={`absolute rounded-2xl neu-raised pointer-events-none flex items-center justify-center p-5 ${className ?? ''}`}
-      style={style}
-    >
-      <p className="text-center font-display text-xs font-semibold leading-snug text-neu opacity-40 line-clamp-3">
-        {text}
-      </p>
-    </div>
-  )
-}
+}) => (
+  <div
+    className={`absolute rounded-2xl neu-raised pointer-events-none flex items-center justify-center p-5 ${className ?? ''}`}
+    style={style}
+  >
+    <p className="text-center font-display text-xs font-semibold leading-snug text-neu opacity-40 line-clamp-3">
+      {text}
+    </p>
+  </div>
+);
 
 // My Decks strip — only shown when logged in
-function MyDecks() {
-  const navigate = useNavigate()
-  const { data: decks, isLoading } = useMyDecks()
+const MyDecks = () => {
+  const navigate = useNavigate();
+  const { data: decks, isLoading } = useMyDecks();
 
-  if (isLoading) return null
-  if (!decks?.length) return (
-    <div className="text-center text-muted text-sm font-body py-8 opacity-60">
-      No decks yet — <Link to="/browse" className="text-accent">browse public decks</Link> to get started.
-    </div>
-  )
+  if (isLoading) return null;
+  if (!decks?.length) {
+    return (
+      <div className="text-center text-muted text-sm font-body py-8 opacity-60">
+        No decks yet —
+        {' '}
+        <Link to="/browse" className="text-accent">browse public decks</Link>
+        {' '}
+        to get started.
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -112,7 +119,9 @@ function MyDecks() {
             <p className="font-display font-semibold text-neu text-sm leading-snug">{deck.title}</p>
             {deck.cards_due > 0 ? (
               <span className="shrink-0 neu-inset rounded-full px-3 py-1 text-xs font-body text-accent font-semibold">
-                {deck.cards_due} due
+                {deck.cards_due}
+                {' '}
+                due
               </span>
             ) : (
               <span className="shrink-0 neu-inset rounded-full px-3 py-1 text-xs font-body text-muted">
@@ -120,20 +129,26 @@ function MyDecks() {
               </span>
             )}
           </div>
-          <p className="text-xs text-muted font-body">{deck.total_cards} cards · {deck.is_owned ? 'yours' : 'community'}</p>
+          <p className="text-xs text-muted font-body">
+            {deck.total_cards}
+            {' '}
+            cards ·
+            {' '}
+            {deck.is_owned ? 'yours' : 'community'}
+          </p>
         </motion.button>
       ))}
     </div>
-  )
-}
+  );
+};
 
 // Live deck test-run component — uses public decks, no auth required
-function DeckTestRun() {
-  const { data: publicDecks, isLoading: decksLoading } = usePublicDecks('')
-  const firstDeck = publicDecks?.[0]
-  const { data: cards, isLoading: cardsLoading } = usePublicDeckCards(firstDeck?.id ?? 0)
-  const [index, setIndex] = useState(0)
-  const [direction, setDirection] = useState<1 | -1>(1)
+const DeckTestRun = () => {
+  const { data: publicDecks, isLoading: decksLoading } = usePublicDecks('');
+  const firstDeck = publicDecks?.[0];
+  const { data: cards, isLoading: cardsLoading } = usePublicDeckCards(firstDeck?.id ?? 0);
+  const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState<1 | -1>(1);
 
   if (decksLoading || cardsLoading) {
     return (
@@ -142,7 +157,7 @@ function DeckTestRun() {
           <p className="text-muted text-sm">Loading deck…</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!firstDeck || !cards || cards.length === 0) {
@@ -150,18 +165,23 @@ function DeckTestRun() {
       <div className="flex items-center justify-center h-64">
         <div className="neu-inset rounded-2xl px-8 py-6 text-center max-w-sm">
           <p className="text-muted text-sm mb-2">No public decks found.</p>
-          <p className="text-muted text-xs opacity-60">Run <code className="font-mono">python seed.py</code> in the backend to create a demo deck.</p>
+          <p className="text-muted text-xs opacity-60">
+            Run
+            <code className="font-mono">python seed.py</code>
+            {' '}
+            in the backend to create a demo deck.
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
-  const card = cards[index]
+  const card = cards[index];
 
   const go = (dir: 1 | -1) => {
-    setDirection(dir)
-    setIndex((i) => (i + dir + cards.length) % cards.length)
-  }
+    setDirection(dir);
+    setIndex((i) => (i + dir + cards.length) % cards.length);
+  };
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -172,7 +192,10 @@ function DeckTestRun() {
           <p className="font-display font-semibold text-neu">{firstDeck.title}</p>
         </div>
         <span className="neu-inset rounded-full px-4 py-1.5 text-xs text-muted font-body">
-          {index + 1} / {cards.length}
+          {index + 1}
+          {' '}
+          /
+          {cards.length}
         </span>
       </div>
 
@@ -197,12 +220,12 @@ function DeckTestRun() {
         <NeuButton variant="accent" onClick={() => go(1)}>Next →</NeuButton>
       </div>
     </div>
-  )
-}
+  );
+};
 
-function MyDecksSection() {
-  const { user } = useAuth()
-  if (!user) return null
+const MyDecksSection = () => {
+  const { user } = useAuth();
+  if (!user) return null;
   return (
     <section className="py-16 px-6">
       <div className="max-w-5xl mx-auto">
@@ -222,27 +245,27 @@ function MyDecksSection() {
         <MyDecks />
       </div>
     </section>
-  )
-}
+  );
+};
 
 export default function SplashPage({ isDark, onToggleTheme }: SplashPageProps) {
-  const heroRef = useRef<HTMLDivElement>(null)
-  const { scrollY } = useScroll()
+  const heroRef = useRef<HTMLDivElement>(null);
+  const { scrollY } = useScroll();
 
-  const c1Y = useTransform(scrollY, [0, 600], [0, -160])
-  const c1R = useTransform(scrollY, [0, 600], [-6, -20])
-  const c1O = useTransform(scrollY, [0, 400], [1, 0])
+  const c1Y = useTransform(scrollY, [0, 600], [0, -160]);
+  const c1R = useTransform(scrollY, [0, 600], [-6, -20]);
+  const c1O = useTransform(scrollY, [0, 400], [1, 0]);
 
-  const c2Y = useTransform(scrollY, [0, 600], [0, -100])
-  const c2R = useTransform(scrollY, [0, 600], [8, 22])
-  const c2O = useTransform(scrollY, [0, 480], [0.8, 0])
+  const c2Y = useTransform(scrollY, [0, 600], [0, -100]);
+  const c2R = useTransform(scrollY, [0, 600], [8, 22]);
+  const c2O = useTransform(scrollY, [0, 480], [0.8, 0]);
 
-  const c3Y = useTransform(scrollY, [0, 600], [0, -200])
-  const c3R = useTransform(scrollY, [0, 600], [-3, -14])
-  const c3O = useTransform(scrollY, [0, 340], [0.6, 0])
+  const c3Y = useTransform(scrollY, [0, 600], [0, -200]);
+  const c3R = useTransform(scrollY, [0, 600], [-3, -14]);
+  const c3O = useTransform(scrollY, [0, 340], [0.6, 0]);
 
-  const heroY = useTransform(scrollY, [0, 400], [0, 55])
-  const heroO = useTransform(scrollY, [0, 340], [1, 0])
+  const heroY = useTransform(scrollY, [0, 400], [0, 55]);
+  const heroO = useTransform(scrollY, [0, 340], [1, 0]);
 
   return (
     <div className="min-h-screen font-body" style={{ background: 'var(--neu-bg)' }}>
@@ -429,13 +452,17 @@ export default function SplashPage({ isDark, onToggleTheme }: SplashPageProps) {
       <footer className="py-8 px-6 neu-inset mt-4">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="font-display text-sm font-bold text-muted">
-            mem<span style={{ color: 'var(--neu-accent)' }}>o</span>rise
+            mem
+            <span style={{ color: 'var(--neu-accent)' }}>o</span>
+            rise
           </span>
           <span className="text-xs text-muted">
-            MIT License · Self-hosted · {new Date().getFullYear()}
+            MIT License · Self-hosted ·
+            {' '}
+            {new Date().getFullYear()}
           </span>
         </div>
       </footer>
     </div>
-  )
+  );
 }

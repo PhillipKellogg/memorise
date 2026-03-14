@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Link, useNavigate } from 'react-router-dom'
-import Nav from '@/components/Nav'
-import { useCreateDeck, useCreateCard, useUpdateCard } from '@/queries'
-import type { Deck } from '@/types'
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import Nav from '@/components/Nav';
+import { useCreateDeck, useCreateCard, useUpdateCard } from '@/queries';
+import type { Deck } from '@/types';
 
 interface DeckBuilderPageProps {
   isDark: boolean
@@ -17,58 +17,58 @@ interface LocalCard {
 }
 
 export default function DeckBuilderPage({ isDark, onToggleTheme }: DeckBuilderPageProps) {
-  const navigate = useNavigate()
-  const [phase, setPhase] = useState<'name' | 'cards'>('name')
-  const [title, setTitle] = useState('')
-  const [deck, setDeck] = useState<Deck | null>(null)
-  const [front, setFront] = useState('')
-  const [back, setBack] = useState('')
-  const [addedCards, setAddedCards] = useState<LocalCard[]>([])
-  const [editingCard, setEditingCard] = useState<LocalCard | null>(null)
+  const navigate = useNavigate();
+  const [phase, setPhase] = useState<'name' | 'cards'>('name');
+  const [title, setTitle] = useState('');
+  const [deck, setDeck] = useState<Deck | null>(null);
+  const [front, setFront] = useState('');
+  const [back, setBack] = useState('');
+  const [addedCards, setAddedCards] = useState<LocalCard[]>([]);
+  const [editingCard, setEditingCard] = useState<LocalCard | null>(null);
 
-  const createDeck = useCreateDeck()
-  const createCard = useCreateCard()
-  const updateCard = useUpdateCard()
+  const createDeck = useCreateDeck();
+  const createCard = useCreateCard();
+  const updateCard = useUpdateCard();
 
-  const isPending = createCard.isPending || updateCard.isPending
+  const isPending = createCard.isPending || updateCard.isPending;
 
   const handleCreateDeck = async () => {
-    if (!title.trim() || createDeck.isPending) return
-    const d = await createDeck.mutateAsync({ title: title.trim() })
-    setDeck(d)
-    setPhase('cards')
-  }
+    if (!title.trim() || createDeck.isPending) return;
+    const d = await createDeck.mutateAsync({ title: title.trim() });
+    setDeck(d);
+    setPhase('cards');
+  };
 
   const handleAddCard = async () => {
-    if (!front.trim() || !back.trim() || !deck || isPending) return
-    const card = await createCard.mutateAsync({ deckId: deck.id, front: front.trim(), back: back.trim() })
-    setAddedCards(prev => [...prev, { id: card.id, front: card.front, back: card.back }])
-    setFront('')
-    setBack('')
-  }
+    if (!front.trim() || !back.trim() || !deck || isPending) return;
+    const card = await createCard.mutateAsync({ deckId: deck.id, front: front.trim(), back: back.trim() });
+    setAddedCards((prev) => [...prev, { id: card.id, front: card.front, back: card.back }]);
+    setFront('');
+    setBack('');
+  };
 
   const handleSelectCard = (card: LocalCard) => {
-    setEditingCard(card)
-    setFront(card.front)
-    setBack(card.back)
-  }
+    setEditingCard(card);
+    setFront(card.front);
+    setBack(card.back);
+  };
 
   const handleSaveEdit = async () => {
-    if (!front.trim() || !back.trim() || !deck || !editingCard || isPending) return
-    await updateCard.mutateAsync({ deckId: deck.id, cardId: editingCard.id, front: front.trim(), back: back.trim() })
-    setAddedCards(prev =>
-      prev.map(c => c.id === editingCard.id ? { ...c, front: front.trim(), back: back.trim() } : c)
-    )
-    setEditingCard(null)
-    setFront('')
-    setBack('')
-  }
+    if (!front.trim() || !back.trim() || !deck || !editingCard || isPending) return;
+    await updateCard.mutateAsync({
+      deckId: deck.id, cardId: editingCard.id, front: front.trim(), back: back.trim(),
+    });
+    setAddedCards((prev) => prev.map((c) => (c.id === editingCard.id ? { ...c, front: front.trim(), back: back.trim() } : c)));
+    setEditingCard(null);
+    setFront('');
+    setBack('');
+  };
 
   const handleCancelEdit = () => {
-    setEditingCard(null)
-    setFront('')
-    setBack('')
-  }
+    setEditingCard(null);
+    setFront('');
+    setBack('');
+  };
 
   return (
     <div className="min-h-screen font-body" style={{ background: 'var(--neu-bg)' }}>
@@ -94,8 +94,8 @@ export default function DeckBuilderPage({ isDark, onToggleTheme }: DeckBuilderPa
                   className="neu-input w-full mb-6"
                   placeholder="e.g. Japanese N5 Vocabulary"
                   value={title}
-                  onChange={e => setTitle(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleCreateDeck()}
+                  onChange={(e) => setTitle(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleCreateDeck()}
                   autoFocus
                 />
 
@@ -132,7 +132,9 @@ export default function DeckBuilderPage({ isDark, onToggleTheme }: DeckBuilderPa
                     <p className="font-display font-semibold text-neu">{deck?.title}</p>
                   </div>
                   <span className="neu-inset rounded-full px-4 py-1.5 text-xs text-muted font-body">
-                    {addedCards.length} {addedCards.length === 1 ? 'card' : 'cards'}
+                    {addedCards.length}
+                    {' '}
+                    {addedCards.length === 1 ? 'card' : 'cards'}
                   </span>
                 </div>
 
@@ -145,7 +147,7 @@ export default function DeckBuilderPage({ isDark, onToggleTheme }: DeckBuilderPa
                       rows={3}
                       placeholder="Question or prompt…"
                       value={front}
-                      onChange={e => setFront(e.target.value)}
+                      onChange={(e) => setFront(e.target.value)}
                     />
                   </div>
                   <div>
@@ -155,7 +157,7 @@ export default function DeckBuilderPage({ isDark, onToggleTheme }: DeckBuilderPa
                       rows={3}
                       placeholder="Answer…"
                       value={back}
-                      onChange={e => setBack(e.target.value)}
+                      onChange={(e) => setBack(e.target.value)}
                     />
                   </div>
                 </div>
@@ -207,7 +209,7 @@ export default function DeckBuilderPage({ isDark, onToggleTheme }: DeckBuilderPa
                   <div>
                     <p className="text-xs uppercase tracking-widest text-muted mb-3 font-body">Added</p>
                     <div className="flex flex-wrap gap-2">
-                      {addedCards.map(c => (
+                      {addedCards.map((c) => (
                         <motion.button
                           key={c.id}
                           initial={{ opacity: 0, scale: 0.85 }}
@@ -230,5 +232,5 @@ export default function DeckBuilderPage({ isDark, onToggleTheme }: DeckBuilderPa
         </div>
       </main>
     </div>
-  )
+  );
 }

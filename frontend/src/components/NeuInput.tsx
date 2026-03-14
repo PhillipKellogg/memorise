@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
 interface NeuInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string
@@ -16,7 +16,7 @@ export default function NeuInput({
   id,
   ...props
 }: NeuInputProps) {
-  const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-')
+  const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-');
 
   return (
     <div className={cn('flex flex-col gap-1.5', wrapperClassName)}>
@@ -33,5 +33,5 @@ export default function NeuInput({
       {error && <p className="text-xs text-red-400 font-body">{error}</p>}
       {hint && !error && <p className="text-xs text-muted font-body opacity-70">{hint}</p>}
     </div>
-  )
+  );
 }

@@ -1,33 +1,35 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@/lib/utils'
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface StudyCardProps {
   front: string
   back: string
   flipped: boolean
   onFlip: () => void
-  transitioning?: boolean  // true while waiting for next card — fades question out early
+  transitioning?: boolean // true while waiting for next card — fades question out early
   className?: string
 }
 
-export default function StudyCard({ front, back, flipped, onFlip, transitioning = false, className }: StudyCardProps) {
-  const [pressing, setPressing] = useState(false)
+export default function StudyCard({
+  front, back, flipped, onFlip, transitioning = false, className,
+}: StudyCardProps) {
+  const [pressing, setPressing] = useState(false);
 
   const handleClick = () => {
-    if (flipped || pressing) return
-    setPressing(true)
+    if (flipped || pressing) return;
+    setPressing(true);
     setTimeout(() => {
-      onFlip()
-      setPressing(false)
-    }, 130)
-  }
+      onFlip();
+      setPressing(false);
+    }, 130);
+  };
 
   const shadowClass = pressing
     ? 'neu-deep-press scale-[0.955]'
     : flipped
-    ? 'neu-answered'
-    : 'neu-raised cursor-pointer'
+      ? 'neu-answered'
+      : 'neu-raised cursor-pointer';
 
   return (
     <div
@@ -63,7 +65,10 @@ export default function StudyCard({ front, back, flipped, onFlip, transitioning 
             transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
             style={{ overflow: 'hidden' }}
           >
-            <div style={{ height: '1px', margin: '0 2rem', background: 'var(--neu-shadow-dark)', opacity: 0.4 }} />
+            <div style={{
+              height: '1px', margin: '0 2rem', background: 'var(--neu-shadow-dark)', opacity: 0.4,
+            }}
+            />
             <div className="p-8 pt-6 text-center">
               <p className="text-xs uppercase tracking-widest text-accent font-body mb-3">Answer</p>
               <p className="font-display text-xl font-semibold text-neu leading-snug">{back}</p>
@@ -72,5 +77,5 @@ export default function StudyCard({ front, back, flipped, onFlip, transitioning 
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }

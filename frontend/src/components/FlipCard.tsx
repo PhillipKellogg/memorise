@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@/lib/utils'
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface FlipCardProps {
   front: string
@@ -9,24 +9,24 @@ interface FlipCardProps {
 }
 
 export default function FlipCard({ front, back, className }: FlipCardProps) {
-  const [flipped, setFlipped] = useState(false)
-  const [pressing, setPressing] = useState(false)
+  const [flipped, setFlipped] = useState(false);
+  const [pressing, setPressing] = useState(false);
 
   const handleClick = () => {
-    if (pressing) return
-    setPressing(true)
+    if (pressing) return;
+    setPressing(true);
     setTimeout(() => {
-      setFlipped((f) => !f)
-      setPressing(false)
-    }, 160)
-  }
+      setFlipped((f) => !f);
+      setPressing(false);
+    }, 160);
+  };
 
   // Shadow class: raised → deep-press during click → answered (soft inset) when flipped
   const shadowClass = pressing
     ? 'neu-deep-press'
     : flipped
-    ? 'neu-answered'
-    : 'neu-raised neu-card-hover'
+      ? 'neu-answered'
+      : 'neu-raised neu-card-hover';
 
   return (
     <div
@@ -78,5 +78,5 @@ export default function FlipCard({ front, back, className }: FlipCardProps) {
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }

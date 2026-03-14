@@ -1,43 +1,43 @@
-import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@/lib/utils'
-import api from '@/lib/api'
-import type { ApiStatus } from '@/types'
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import api from '@/lib/api';
+import type { ApiStatus } from '@/types';
 
 export default function ApiStatus() {
-  const [status, setStatus] = useState<ApiStatus>('checking')
+  const [status, setStatus] = useState<ApiStatus>('checking');
 
   useEffect(() => {
-    let cancelled = false
+    let cancelled = false;
 
     const check = async () => {
       try {
-        await api.get('/health', { timeout: 4000 })
-        if (!cancelled) setStatus('online')
+        await api.get('/health', { timeout: 4000 });
+        if (!cancelled) setStatus('online');
       } catch {
-        if (!cancelled) setStatus('offline')
+        if (!cancelled) setStatus('offline');
       }
-    }
+    };
 
-    check()
-    const interval = setInterval(check, 30_000)
+    check();
+    const interval = setInterval(check, 30_000);
     return () => {
-      cancelled = true
-      clearInterval(interval)
-    }
-  }, [])
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
 
   const label: Record<ApiStatus, string> = {
     online: 'API online',
     offline: 'API offline',
     checking: 'Connecting…',
-  }
+  };
 
   const dotColor: Record<ApiStatus, string> = {
     online: 'bg-green-400',
     offline: 'bg-red-500',
     checking: 'bg-yellow-400',
-  }
+  };
 
   return (
     <AnimatePresence mode="wait">
@@ -59,5 +59,5 @@ export default function ApiStatus() {
         {label[status]}
       </motion.div>
     </AnimatePresence>
-  )
+  );
 }

@@ -1,17 +1,17 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { useTheme } from '@/hooks/useTheme'
-import { AuthProvider } from '@/contexts/AuthContext'
-import SplashPage from '@/pages/SplashPage'
-import HowItWorksPage from '@/pages/HowItWorksPage'
-import DeckBuilderPage from '@/pages/DeckBuilderPage'
-import AuthPage from '@/pages/AuthPage'
-import BrowsePage from '@/pages/BrowsePage'
-import StudyPage from '@/pages/StudyPage'
-import StorybookPage from '@/pages/StorybookPage'
-import ScrollToTop from '@/components/ScrollToTop'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useTheme } from '@/hooks/useTheme';
+import { AuthProvider } from '@/contexts/AuthContext';
+import SplashPage from '@/pages/SplashPage';
+import HowItWorksPage from '@/pages/HowItWorksPage';
+import DeckBuilderPage from '@/pages/DeckBuilderPage';
+import AuthPage from '@/pages/AuthPage';
+import BrowsePage from '@/pages/BrowsePage';
+import StudyPage from '@/pages/StudyPage';
+import StorybookPage from '@/pages/StorybookPage';
+import ScrollToTop from '@/components/ScrollToTop';
 
 export default function App() {
-  const { isDark, toggle } = useTheme()
+  const { isDark, toggle } = useTheme();
 
   return (
     <AuthProvider>
@@ -28,5 +28,5 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
-  )
+  );
 }

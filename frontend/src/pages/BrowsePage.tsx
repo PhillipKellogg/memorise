@@ -1,19 +1,19 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
-import Nav from '@/components/Nav'
-import { usePublicDecks } from '@/queries'
-import { useAuth } from '@/contexts/AuthContext'
-import type { PublicDeck } from '@/types'
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import Nav from '@/components/Nav';
+import { usePublicDecks } from '@/queries';
+import { useAuth } from '@/contexts/AuthContext';
+import type { PublicDeck } from '@/types';
 
 interface BrowsePageProps {
   isDark: boolean
   onToggleTheme: () => void
 }
 
-function DeckCard({ deck, index }: { deck: PublicDeck; index: number }) {
-  const navigate = useNavigate()
-  const { user } = useAuth()
+const DeckCard = ({ deck, index }: { deck: PublicDeck; index: number }) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   return (
     <motion.div
@@ -25,7 +25,9 @@ function DeckCard({ deck, index }: { deck: PublicDeck; index: number }) {
       <div className="flex items-start justify-between gap-4">
         <h3 className="font-display font-semibold text-neu text-lg leading-snug">{deck.title}</h3>
         <span className="neu-inset shrink-0 rounded-full px-3 py-1 text-xs text-muted font-body">
-          {deck.card_count} {deck.card_count === 1 ? 'card' : 'cards'}
+          {deck.card_count}
+          {' '}
+          {deck.card_count === 1 ? 'card' : 'cards'}
         </span>
       </div>
 
@@ -34,32 +36,35 @@ function DeckCard({ deck, index }: { deck: PublicDeck; index: number }) {
       )}
 
       <div className="flex items-center justify-between mt-auto pt-2">
-        <span className="text-xs text-muted font-body">by {deck.owner_username}</span>
+        <span className="text-xs text-muted font-body">
+          by
+          {deck.owner_username}
+        </span>
         <motion.button
           type="button"
           whileTap={{ scale: 0.97 }}
-          onClick={() => user ? navigate(`/study/${deck.id}`) : navigate('/login')}
+          onClick={() => (user ? navigate(`/study/${deck.id}`) : navigate('/login'))}
           className="neu-btn px-5 py-2 rounded-xl text-sm font-body font-semibold text-accent"
         >
           {user ? 'Study →' : 'Sign in to study'}
         </motion.button>
       </div>
     </motion.div>
-  )
-}
+  );
+};
 
 export default function BrowsePage({ isDark, onToggleTheme }: BrowsePageProps) {
-  const [search, setSearch] = useState('')
-  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   // Simple debounce using state + timeout
   const handleSearch = (value: string) => {
-    setSearch(value)
-    clearTimeout((window as any)._searchTimer)
-    ;(window as any)._searchTimer = setTimeout(() => setDebouncedSearch(value), 300)
-  }
+    setSearch(value);
+    clearTimeout((window as any)._searchTimer);
+    (window as any)._searchTimer = setTimeout(() => setDebouncedSearch(value), 300);
+  };
 
-  const { data: decks, isLoading } = usePublicDecks(debouncedSearch)
+  const { data: decks, isLoading } = usePublicDecks(debouncedSearch);
 
   return (
     <div className="min-h-screen font-body" style={{ background: 'var(--neu-bg)' }}>
@@ -80,7 +85,7 @@ export default function BrowsePage({ isDark, onToggleTheme }: BrowsePageProps) {
             className="neu-input w-full mb-10"
             placeholder="Search decks…"
             value={search}
-            onChange={e => handleSearch(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             autoFocus
           />
 
@@ -100,5 +105,5 @@ export default function BrowsePage({ isDark, onToggleTheme }: BrowsePageProps) {
         </motion.div>
       </main>
     </div>
-  )
+  );
 }

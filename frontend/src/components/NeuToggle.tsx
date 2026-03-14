@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion'
-import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface NeuToggleProps {
   checked: boolean
@@ -9,7 +9,9 @@ interface NeuToggleProps {
   className?: string
 }
 
-export default function NeuToggle({ checked, onChange, label, disabled, className }: NeuToggleProps) {
+export default function NeuToggle({
+  checked, onChange, label, disabled, className,
+}: NeuToggleProps) {
   return (
     <label className={cn('flex items-center gap-3 cursor-pointer select-none group', disabled && 'opacity-40 cursor-not-allowed', className)}>
       <div
@@ -32,5 +34,5 @@ export default function NeuToggle({ checked, onChange, label, disabled, classNam
         <span className="text-sm font-body text-neu">{label}</span>
       )}
     </label>
-  )
+  );
 }

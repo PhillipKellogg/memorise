@@ -1,8 +1,8 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
-import Nav from '@/components/Nav'
-import { useAuth } from '@/contexts/AuthContext'
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import Nav from '@/components/Nav';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AuthPageProps {
   isDark: boolean
@@ -10,44 +10,44 @@ interface AuthPageProps {
 }
 
 export default function AuthPage({ isDark, onToggleTheme }: AuthPageProps) {
-  const navigate = useNavigate()
-  const { login, register } = useAuth()
-  const [mode, setMode] = useState<'login' | 'register'>('login')
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate();
+  const { login, register } = useAuth();
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e?: React.FormEvent) => {
-    e?.preventDefault()
-    if (!username.trim() || !password.trim() || isLoading) return
-    setError('')
-    setIsLoading(true)
+    e?.preventDefault();
+    if (!username.trim() || !password.trim() || isLoading) return;
+    setError('');
+    setIsLoading(true);
     try {
       if (mode === 'login') {
-        await login(username.trim(), password)
+        await login(username.trim(), password);
       } else {
-        await register(username.trim(), password)
+        await register(username.trim(), password);
       }
-      navigate('/')
+      navigate('/');
     } catch (err: any) {
-      const detail = err?.response?.data?.detail
+      const detail = err?.response?.data?.detail;
       if (detail === 'Username already taken') {
-        setError('That username is already taken.')
+        setError('That username is already taken.');
       } else if (detail === 'Invalid credentials') {
-        setError('Wrong username or password.')
+        setError('Wrong username or password.');
       } else {
-        setError('Something went wrong. Try again.')
+        setError('Something went wrong. Try again.');
       }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const switchMode = (next: 'login' | 'register') => {
-    setMode(next)
-    setError('')
-  }
+    setMode(next);
+    setError('');
+  };
 
   return (
     <div className="min-h-screen font-body" style={{ background: 'var(--neu-bg)' }}>
@@ -94,7 +94,7 @@ export default function AuthPage({ isDark, onToggleTheme }: AuthPageProps) {
                   className="neu-input w-full"
                   placeholder="your username"
                   value={username}
-                  onChange={e => setUsername(e.target.value)}
+                  onChange={(e) => setUsername(e.target.value)}
                   autoFocus
                   autoComplete="username"
                 />
@@ -106,7 +106,7 @@ export default function AuthPage({ isDark, onToggleTheme }: AuthPageProps) {
                   className="neu-input w-full"
                   placeholder="••••••••"
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                 />
               </div>
@@ -128,5 +128,5 @@ export default function AuthPage({ isDark, onToggleTheme }: AuthPageProps) {
         </motion.div>
       </main>
     </div>
-  )
+  );
 }

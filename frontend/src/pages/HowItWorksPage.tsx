@@ -1,6 +1,6 @@
-import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
-import Nav from '@/components/Nav'
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import Nav from '@/components/Nav';
 
 interface Props {
   isDark: boolean
@@ -33,15 +33,16 @@ const STEPS = [
     title: 'The algorithm does the rest',
     body: 'Cards you know well get pushed further out — weeks, then months. Cards you struggle with come back sooner. You study less over time, not more.',
   },
-]
+];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   visible: (i: number) => ({
-    opacity: 1, y: 0,
+    opacity: 1,
+    y: 0,
     transition: { delay: i * 0.08, duration: 0.5, ease: [0.4, 0, 0.2, 1] },
   }),
-}
+};
 
 export default function HowItWorksPage({ isDark, onToggleTheme }: Props) {
   return (
@@ -106,5 +107,5 @@ export default function HowItWorksPage({ isDark, onToggleTheme }: Props) {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useParams, useNavigate, Link } from 'react-router-dom'
-import Nav from '@/components/Nav'
-import StudyCard from '@/components/StudyCard'
-import NeuButton from '@/components/NeuButton'
-import { useEnroll, useNextCard, useReviewCard, studyKeys } from '@/queries'
-import { useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import Nav from '@/components/Nav';
+import StudyCard from '@/components/StudyCard';
+import NeuButton from '@/components/NeuButton';
+import {
+  useEnroll, useNextCard, useReviewCard, studyKeys,
+} from '@/queries';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface StudyPageProps {
   isDark: boolean
@@ -13,70 +15,78 @@ interface StudyPageProps {
 }
 
 const RATINGS = [
-  { value: 1, label: 'Forgot',  key: '1', variant: 'danger'   as const },
-  { value: 2, label: 'Hard',    key: '2', variant: 'warning'  as const },
-  { value: 3, label: 'Medium',  key: '3', variant: 'accent'   as const },
-  { value: 4, label: 'Easy',    key: '4', variant: 'success'  as const },
-] as const
+  {
+    value: 1, label: 'Forgot', key: '1', variant: 'danger' as const,
+  },
+  {
+    value: 2, label: 'Hard', key: '2', variant: 'warning' as const,
+  },
+  {
+    value: 3, label: 'Medium', key: '3', variant: 'accent' as const,
+  },
+  {
+    value: 4, label: 'Easy', key: '4', variant: 'success' as const,
+  },
+] as const;
 
 export default function StudyPage({ isDark, onToggleTheme }: StudyPageProps) {
-  const { deckId } = useParams<{ deckId: string }>()
-  const id = Number(deckId)
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
+  const { deckId } = useParams<{ deckId: string }>();
+  const id = Number(deckId);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const enroll = useEnroll()
-  const { data: card, isLoading } = useNextCard(id)
-  const reviewCard = useReviewCard()
+  const enroll = useEnroll();
+  const { data: card, isLoading } = useNextCard(id);
+  const reviewCard = useReviewCard();
 
-  const [flipped, setFlipped] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [textFading, setTextFading] = useState(false)
-  const [sessionDone, setSessionDone] = useState(false)
-  const [reviewed, setReviewed] = useState(0)
+  const [flipped, setFlipped] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [textFading, setTextFading] = useState(false);
+  const [sessionDone, setSessionDone] = useState(false);
+  const [reviewed, setReviewed] = useState(0);
 
   // Enroll on mount (idempotent)
   useEffect(() => {
-    if (id) enroll.mutate(id)
-  }, [id])
+    if (id) enroll.mutate(id);
+  }, [id]);
 
   // Session done when card is null and we've reviewed at least one
   useEffect(() => {
-    if (!isLoading && card === null) setSessionDone(true)
-  }, [card, isLoading])
+    if (!isLoading && card === null) setSessionDone(true);
+  }, [card, isLoading]);
 
   // Keyboard: space to flip, 1-4 to rate
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.key === ' ' || e.key === 'Spacebar') {
-        e.preventDefault()
-        if (!flipped && card) setFlipped(true)
+        e.preventDefault();
+        if (!flipped && card) setFlipped(true);
       }
       if (flipped && ['1', '2', '3', '4'].includes(e.key)) {
-        handleRate(Number(e.key))
+        handleRate(Number(e.key));
       }
-    }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [flipped, card])
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [flipped, card]);
 
   const handleRate = async (rating: number) => {
-    if (!card || isSubmitting) return
-    setTextFading(true)   // start fading text immediately, before API call
-    setIsSubmitting(true)
-    setFlipped(false)
+    if (!card || isSubmitting) return;
+    setTextFading(true); // start fading text immediately, before API call
+    setIsSubmitting(true);
+    setFlipped(false);
 
-    const next = await reviewCard.mutateAsync({ deckId: id, cardId: card.id, rating })
-    setReviewed(r => r + 1)
+    const next = await reviewCard.mutateAsync({ deckId: id, cardId: card.id, rating });
+    setReviewed((r) => r + 1);
 
     // Manually update the query cache with the next card returned from the review endpoint
-    queryClient.setQueryData(studyKeys.next(id), next ?? null)
-    if (!next) setSessionDone(true)
+    queryClient.setQueryData(studyKeys.next(id), next ?? null);
+    if (!next) setSessionDone(true);
 
-    setTextFading(false)
-    setIsSubmitting(false)
-  }
+    setTextFading(false);
+    setIsSubmitting(false);
+  };
 
   return (
     <div className="min-h-screen font-body" style={{ background: 'var(--neu-bg)' }}>
@@ -98,7 +108,12 @@ export default function StudyPage({ isDark, onToggleTheme }: StudyPageProps) {
                   <p className="text-4xl mb-4">🎉</p>
                   <h2 className="font-display text-2xl font-bold text-neu mb-3">All done!</h2>
                   <p className="text-muted font-body text-sm">
-                    You reviewed {reviewed} {reviewed === 1 ? 'card' : 'cards'}.
+                    You reviewed
+                    {' '}
+                    {reviewed}
+                    {' '}
+                    {reviewed === 1 ? 'card' : 'cards'}
+                    .
                     Come back tomorrow for more.
                   </p>
                 </div>
@@ -136,7 +151,7 @@ export default function StudyPage({ isDark, onToggleTheme }: StudyPageProps) {
                       transition={{ duration: 0.2 }}
                       className="grid grid-cols-4 gap-3 mt-6"
                     >
-                      {RATINGS.map(r => (
+                      {RATINGS.map((r) => (
                         <NeuButton
                           key={r.value}
                           variant={r.variant}
@@ -164,5 +179,5 @@ export default function StudyPage({ isDark, onToggleTheme }: StudyPageProps) {
         </div>
       </main>
     </div>
-  )
+  );
 }

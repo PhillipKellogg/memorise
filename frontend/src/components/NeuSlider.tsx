@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
 interface NeuSliderProps {
   label?: string
@@ -41,9 +41,9 @@ export default function NeuSlider({
         max={max}
         step={step}
         value={value}
-        onChange={e => onChange(Number(e.target.value))}
+        onChange={(e) => onChange(Number(e.target.value))}
         className="neu-slider w-full"
       />
     </div>
-  )
+  );
 }

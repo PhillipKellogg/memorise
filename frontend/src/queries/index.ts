@@ -1,2 +1,2 @@
-export * from './decks'
-export * from './study'
+export * from './decks';
+export * from './study';

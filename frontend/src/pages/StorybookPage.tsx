@@ -1,39 +1,38 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import Nav from '@/components/Nav'
-import NeuButton from '@/components/NeuButton'
-import NeuInput from '@/components/NeuInput'
-import NeuSlider from '@/components/NeuSlider'
-import NeuToggle from '@/components/NeuToggle'
-import StudyCard from '@/components/StudyCard'
-import FlipCard from '@/components/FlipCard'
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import Nav from '@/components/Nav';
+import NeuButton from '@/components/NeuButton';
+import NeuInput from '@/components/NeuInput';
+import NeuSlider from '@/components/NeuSlider';
+import NeuToggle from '@/components/NeuToggle';
+import StudyCard from '@/components/StudyCard';
+import FlipCard from '@/components/FlipCard';
 
 interface Props { isDark: boolean; onToggleTheme: () => void }
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
-    opacity: 1, y: 0,
+    opacity: 1,
+    y: 0,
     transition: { delay: i * 0.06, duration: 0.45, ease: [0.4, 0, 0.2, 1] },
   }),
-}
+};
 
-function Section({ title, children, i = 0 }: { title: string; children: React.ReactNode; i?: number }) {
-  return (
-    <motion.div custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-30px' }}>
-      <p className="text-xs uppercase tracking-widest text-accent font-body mb-5">{title}</p>
-      {children}
-    </motion.div>
-  )
-}
+const Section = ({ title, children, i = 0 }: { title: string; children: React.ReactNode; i?: number }) => (
+  <motion.div custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-30px' }}>
+    <p className="text-xs uppercase tracking-widest text-accent font-body mb-5">{title}</p>
+    {children}
+  </motion.div>
+);
 
 export default function StorybookPage({ isDark, onToggleTheme }: Props) {
-  const [sliderA, setSliderA] = useState(40)
-  const [sliderB, setSliderB] = useState(70)
-  const [tog1, setTog1] = useState(false)
-  const [tog2, setTog2] = useState(true)
-  const [inputVal, setInputVal] = useState('')
-  const [cardFlipped, setCardFlipped] = useState(false)
+  const [sliderA, setSliderA] = useState(40);
+  const [sliderB, setSliderB] = useState(70);
+  const [tog1, setTog1] = useState(false);
+  const [tog2, setTog2] = useState(true);
+  const [inputVal, setInputVal] = useState('');
+  const [cardFlipped, setCardFlipped] = useState(false);
 
   return (
     <div className="min-h-screen font-body" style={{ background: 'var(--neu-bg)' }}>
@@ -78,7 +77,7 @@ export default function StorybookPage({ isDark, onToggleTheme }: Props) {
               label="Default"
               placeholder="Type something…"
               value={inputVal}
-              onChange={e => setInputVal(e.target.value)}
+              onChange={(e) => setInputVal(e.target.value)}
             />
             <NeuInput
               label="With hint"
@@ -108,7 +107,7 @@ export default function StorybookPage({ isDark, onToggleTheme }: Props) {
         <Section title="Sliders" i={3}>
           <div className="neu-raised rounded-3xl p-8 space-y-6">
             <NeuSlider label="Volume" value={sliderA} onChange={setSliderA} />
-            <NeuSlider label="Difficulty" min={1} max={5} step={1} value={sliderB > 5 ? 3 : Math.round(sliderB / 20)} onChange={v => setSliderB(v * 20)} showValue />
+            <NeuSlider label="Difficulty" min={1} max={5} step={1} value={sliderB > 5 ? 3 : Math.round(sliderB / 20)} onChange={(v) => setSliderB(v * 20)} showValue />
             <NeuSlider label="No label value" min={0} max={200} step={10} value={sliderB} onChange={setSliderB} showValue={false} />
           </div>
         </Section>
@@ -160,7 +159,7 @@ export default function StorybookPage({ isDark, onToggleTheme }: Props) {
               { label: 'neu-deep-press', cls: 'neu-deep-press' },
               { label: 'neu-btn', cls: 'neu-btn' },
               { label: 'neu-raised-sm', cls: 'neu-raised-sm' },
-            ].map(s => (
+            ].map((s) => (
               <div key={s.label} className={`${s.cls} rounded-2xl p-5 flex items-center justify-center`}>
                 <span className="text-xs font-mono text-muted">{s.label}</span>
               </div>
@@ -169,5 +168,5 @@ export default function StorybookPage({ isDark, onToggleTheme }: Props) {
         </Section>
       </div>
     </div>
-  )
+  );
 }
