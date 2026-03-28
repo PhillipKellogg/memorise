@@ -3,14 +3,14 @@ WORKDIR /app
 
 FROM base AS dev
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 COPY . .
 EXPOSE 5173
 CMD ["npm", "run", "dev"]
 
 FROM base AS deps
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 FROM base AS build
 ARG VITE_API_URL
